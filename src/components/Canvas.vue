@@ -6,14 +6,7 @@ import { Application } from 'pixi.js'
 import CanvasNode from './CanvasNode'
 import useNodes from '../composables/useNodes'
 
-// const props = defineProps({
-//   nodes: {
-//     type: Array as () => NodeModel[],
-//     required: true,
-//     default: () => [],
-//   },
-// })
-const { nodes, updateNodePosition } = useNodes()
+const { nodes, updateNodePosition, addNode } = useNodes()
 const emit = defineEmits(['element-clicked', 'canvas-clicked', 'element-dropped', 'element-moved'])
 
 const canvas = ref<HTMLCanvasElement>()
@@ -89,6 +82,7 @@ const onDropFromOutside = (ev: DragEvent) => {
   const data = ev.dataTransfer?.getData('text/plain')
   if (data === 'new-node') {
     const { x, y } = viewport.toLocal({ x: ev.clientX, y: ev.clientY })
+    addNode({ x, y })
     emit('element-dropped', { x, y })
   }
 }

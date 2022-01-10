@@ -1,15 +1,15 @@
 import { Position, useStorage } from '@vueuse/core'
 import { NodeModel } from '../types'
+import { v4 as uuid } from 'uuid'
 
 const nodes = useStorage<NodeModel[]>('nodes', [])
 
 const useNodes = () => {
   const getNodeById = (id: string) => nodes.value.find((n) => n.id === id)
 
-  const addNode = (newNode: NodeModel): NodeModel => {
+  const addNode = ({ x, y }: Position, title = '') => {
+    const newNode = { x, y, title, id: uuid() }
     nodes.value = [...nodes.value, newNode]
-
-    return newNode
   }
 
   const updateNodePosition = (id: string, { x, y }: Position): NodeModel => {
