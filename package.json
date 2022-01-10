@@ -8,6 +8,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@vueuse/core": "^7.5.3",
     "pixi-viewport": "^4.34.4",
     "pixi.js": "^6.2.1",
     "vue": "^3.2.26"

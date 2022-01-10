@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import {useStorage} from '@vueuse/core'
 import Canvas from './components/Canvas.vue'
 
 const title = ref('')
 
-const dataModel = ref({
+const dataModel = useStorage('data', {
   nodes: [
     {
       id: 'node1',
@@ -42,8 +43,7 @@ const onElementClicked = (ev) => {
 }
 
 const onCanvasClicked = (ev) => {
-  console.log('ev', ev)
-  const { clientX: x, clientY: y } = ev.data.originalEvent
+  const { x, y } = ev
   const newNode = { title: 'randon', id: '', x, y }
   addNode(newNode)
 }

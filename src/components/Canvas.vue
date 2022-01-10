@@ -41,9 +41,8 @@ const init = () => {
     worldHeight: 1000,
     interaction: app.renderer.plugins.interaction, // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
   })
-  console.log('app.renderer.plugins.interaction', app.renderer.plugins.interaction)
-  viewport.on('pointerdown', (ev) => {
-    emit('canvas-clicked', ev)
+  viewport.on('clicked', (ev) => {
+    emit('canvas-clicked', { x: ev.world.x, y: ev.world.y, ev: ev })
   })
 
   app.stage.addChild(viewport)
