@@ -2,29 +2,35 @@
 import * as PIXI from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
 import { onMounted, ref, watch } from 'vue'
+import { Application } from 'pixi.js'
+import { NodeProps } from '../App.vue'
 
 const props = defineProps({
-  dataModel: {
-    type: Object,
+  nodes: {
+    type: Array as () => NodeProps[],
     required: true,
+    default: () => [],
   },
 })
-const emit = defineEmits(['element-clicked', 'canvas-clicked'])
+const emit = defineEmits(['element-clicked', 'canvas-clicked', 'element-dropped'])
 
 const canvas = ref<HTMLCanvasElement>()
 let viewport: Viewport
+let app: Application
+// const { viewport } = useViewport(app) 
+
 
 onMounted(() => {
   init()
 })
 
 const init = () => {
-  const app = new PIXI.Application({
+  app = new PIXI.Application({
     width: window.innerWidth,
     height: window.innerHeight,
     backgroundColor: 0xf3f3f3,
   })
-  document.getElementById('canvas')?.appendChild(app.view)
+  document.getElementById('canvas')?.replaceWith(app.view)
   // https://github.com/pixijs/pixijs/wiki/v5-Hacks#prevent-pinch-gesture-in-chrome
   canvas.value?.addEventListener(
     'wheel',
@@ -54,18 +60,22 @@ const init = () => {
 }
 
 const render = () => {
-  props.dataModel.nodes.forEach((node) => {
-    const square = createSquare({ x: node.x, y: node.y })
+  props.nodes.forEach((node) => {
+    const square = createNode({ x: node.x, y: node.y }, node)
 
     viewport.addChild(square)
   })
 }
 
-watch(props, () => {
-  render()
-})
+watch(
+  props,
+  () => {
+    render()
+  },
+  { deep: true }
+)
 
-const createSquare = (position: { x: number; y: number }) => {
+const createNode = (position: { x: number; y: number }, data: unknown) => {
   const square = new PIXI.Sprite(PIXI.Texture.WHITE)
   square.position.set(position.x, position.y)
   square.width = 50
@@ -74,7 +84,7 @@ const createSquare = (position: { x: number; y: number }) => {
   square.interactive = true
   square.buttonMode = true
   square.on('pointerdown', (ev) => {
-    emit('element-clicked', { el: square, ev })
+    emit('element-clicked', { el: square, ev, data })
   })
   square.on('pointerover', (ev) => {
     square.scale.x *= 1.25
@@ -89,8 +99,22 @@ const createSquare = (position: { x: number; y: number }) => {
 
   return square
 }
+
+const onDragOver = (ev: DragEvent) => {
+  ev.preventDefault()
+};
+const onDrop = (ev: DragEvent) => {
+  ev.preventDefault()
+  const data = ev.dataTransfer?.getData('text/plain')
+  if (data === 'new-node') {
+    const {x, y} = viewport.toLocal({ x: ev.clientX, y: ev.clientY})
+    emit('element-dropped', { x, y })
+  }
+};
 </script>
 
 <template>
-  <div id="canvas" ref="canvas"></div>
+    <div class="fixed inset-0" @dragover="onDragOver" @drop="onDrop">
+    <div id="canvas"></div>
+  </div>
 </template>

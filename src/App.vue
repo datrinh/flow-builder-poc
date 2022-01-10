@@ -1,61 +1,66 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import {useStorage} from '@vueuse/core'
+import { useStorage } from '@vueuse/core'
 import Canvas from './components/Canvas.vue'
+
+export interface Position {
+  x: number,
+  y: number
+}
+
+export interface NodeProps {
+  id: string
+  title: string
+  x: number
+  y: number
+}
 
 const title = ref('')
 
-const dataModel = useStorage('data', {
-  nodes: [
-    {
-      id: 'node1',
-      title: 'Node 1',
-      x: 0,
-      y: 0,
-    },
-    {
-      id: 'node2',
-      title: 'Node 2',
-      x: 100,
-      y: 0,
-    },
-  ],
-  links: [
-    {
-      from: 'node1',
-      to: 'node2',
-    },
-  ],
-})
+const nodes = useStorage<NodeProps[]>('data', [
+  {
+    id: 'node1',
+    title: 'Node 1',
+    x: 0,
+    y: 0,
+  },
+])
 
-const addNode = (node) => {
-  dataModel.value.nodes = [...dataModel.value.nodes, node]
+const addNode = ({ title = 'Cool Title', x, y, id = Date.now().toString() }: NodeProps) => {
+  const newNode = { title, x, y, id }
+  nodes.value = [...nodes.value, newNode]
 }
 
 const onSubmit = () => {
   addNode({ title: title.value, id: Date.now().toString(), x: 200, y: 0 })
 }
 
+const removeNode = (id: string) => {
+  nodes.value = nodes.value.filter((node) => node.id !== id)
+}
+
 const onElementClicked = (ev) => {
   console.log('ev', ev)
-  ev.el.scale.x *= 1.25
-  ev.el.scale.y *= 1.25
+  removeNode(ev.data.id)
 }
 
 const onCanvasClicked = (ev) => {
   const { x, y } = ev
-  const newNode = { title: 'randon', id: '', x, y }
-  addNode(newNode)
+  // const newNode = { title: 'randon', id: '', x, y }
+  // addNode(newNode)
 }
 
-const onDrag = (ev) => {
-  console.log('ev', ev)
+const onDrag = (ev: DragEvent) => {
+  ev.dataTransfer!.setData('text/plain', 'new-node')
 }
+const onElementDropped = ({x, y}: Position) => {
+  addNode({ x, y, title: '', id: Date.now().toString() })
+};
 </script>
 
 <template>
   <div>
-    <Canvas :data-model="dataModel" @element-clicked="onElementClicked" @canvas-clicked="onCanvasClicked"></Canvas>
+    <Canvas @element-dropped="onElementDropped" :nodes="nodes" @element-clicked="onElementClicked" @canvas-clicked="onCanvasClicked"></Canvas>
     <div class="fixed top-4 right-4 h-[50vh] w-60 bg-white rounded-sm p-4 shadow-lg overflow-auto">
       <h1>Widget</h1>
       <form @submit.prevent="onSubmit">
@@ -64,13 +69,13 @@ const onDrag = (ev) => {
       </form>
 
       <pre>
-        {{ dataModel }}
+        {{ nodes }}
       </pre>
     </div>
     <div
-      draggable
+      draggable="true"
       @dragstart="onDrag"
-      class="fixed bottom-0 left-4 w-60 h-60 bg-red-300 shadow-lg translate-y-40 hover:translate-y-28 transition-transform"
+      class="fixed bottom-0 left-4 w-60 h-60 bg-[#00FF00] shadow-lg translate-y-40 hover:translate-y-28 transition-transform"
     ></div>
   </div>
 </template>
