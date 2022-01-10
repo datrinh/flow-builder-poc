@@ -3,22 +3,21 @@ import * as PIXI from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
 import { onMounted, ref, watch } from 'vue'
 import { Application } from 'pixi.js'
-import { NodeProps } from '../App.vue'
+import { NodeModel, Position } from '../types'
+import CanvasNode from './CanvasNode'
 
 const props = defineProps({
   nodes: {
-    type: Array as () => NodeProps[],
+    type: Array as () => NodeModel[],
     required: true,
     default: () => [],
   },
 })
-const emit = defineEmits(['element-clicked', 'canvas-clicked', 'element-dropped'])
+const emit = defineEmits(['element-clicked', 'canvas-clicked', 'element-dropped', 'element-moved'])
 
 const canvas = ref<HTMLCanvasElement>()
 let viewport: Viewport
 let app: Application
-// const { viewport } = useViewport(app) 
-
 
 onMounted(() => {
   init()
@@ -45,7 +44,7 @@ const init = () => {
     screenHeight: window.innerHeight,
     worldWidth: 1000,
     worldHeight: 1000,
-    interaction: app.renderer.plugins.interaction, // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
+    interaction: app.renderer.plugins.interaction,
   })
   viewport.on('clicked', (ev) => {
     emit('canvas-clicked', { x: ev.world.x, y: ev.world.y, ev: ev })
@@ -60,10 +59,13 @@ const init = () => {
 }
 
 const render = () => {
-  props.nodes.forEach((node) => {
-    const square = createNode({ x: node.x, y: node.y }, node)
+  props.nodes.forEach(({x, y}) => {
+    const node = createNode({ x, y })
+    node.on('drop', (ev) => {
+      emit('element-moved', ev)
+    })
 
-    viewport.addChild(square)
+    viewport.addChild(node)
   })
 }
 
@@ -75,46 +77,25 @@ watch(
   { deep: true }
 )
 
-const createNode = (position: { x: number; y: number }, data: unknown) => {
-  const square = new PIXI.Sprite(PIXI.Texture.WHITE)
-  square.position.set(position.x, position.y)
-  square.width = 50
-  square.height = 50
-  square.tint = 0x00ff00
-  square.interactive = true
-  square.buttonMode = true
-  square.on('pointerdown', (ev) => {
-    emit('element-clicked', { el: square, ev, data })
-  })
-  square.on('pointerover', (ev) => {
-    square.scale.x *= 1.25
-    square.scale.y *= 1.25
-    // emit('element-hovered', { el: square, ev })
-  })
-  square.on('pointerout', (ev) => {
-    square.scale.x *= 0.75
-    square.scale.y *= 0.75
-    // emit('element-hovered', { el: square, ev })
-  })
-
-  return square
+const createNode = (position: Position) => {
+  return CanvasNode(position, viewport)
 }
 
 const onDragOver = (ev: DragEvent) => {
   ev.preventDefault()
-};
-const onDrop = (ev: DragEvent) => {
+}
+const onDropFromOutside = (ev: DragEvent) => {
   ev.preventDefault()
   const data = ev.dataTransfer?.getData('text/plain')
   if (data === 'new-node') {
-    const {x, y} = viewport.toLocal({ x: ev.clientX, y: ev.clientY})
+    const { x, y } = viewport.toLocal({ x: ev.clientX, y: ev.clientY })
     emit('element-dropped', { x, y })
   }
-};
+}
 </script>
 
 <template>
-    <div class="fixed inset-0" @dragover="onDragOver" @drop="onDrop">
+  <div class="fixed inset-0" @dragover="onDragOver" @drop="onDropFromOutside">
     <div id="canvas"></div>
   </div>
 </template>
