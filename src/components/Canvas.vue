@@ -3,16 +3,17 @@ import * as PIXI from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
 import { onMounted, ref, watch } from 'vue'
 import { Application } from 'pixi.js'
-import { NodeModel, Position } from '../types'
 import CanvasNode from './CanvasNode'
+import useNodes from '../composables/useNodes'
 
-const props = defineProps({
-  nodes: {
-    type: Array as () => NodeModel[],
-    required: true,
-    default: () => [],
-  },
-})
+// const props = defineProps({
+//   nodes: {
+//     type: Array as () => NodeModel[],
+//     required: true,
+//     default: () => [],
+//   },
+// })
+const { nodes, updateNodePosition } = useNodes()
 const emit = defineEmits(['element-clicked', 'canvas-clicked', 'element-dropped', 'element-moved'])
 
 const canvas = ref<HTMLCanvasElement>()
@@ -59,9 +60,12 @@ const init = () => {
 }
 
 const render = () => {
-  props.nodes.forEach(({x, y}) => {
-    const node = createNode({ x, y })
+  viewport.removeChildren()
+
+  nodes.value.forEach(({ x, y, id }) => {
+    const node = CanvasNode({ x, y }, viewport)
     node.on('drop', (ev) => {
+      updateNodePosition(id, { x: ev.x, y: ev.y })
       emit('element-moved', ev)
     })
 
@@ -70,16 +74,12 @@ const render = () => {
 }
 
 watch(
-  props,
+  nodes,
   () => {
     render()
   },
   { deep: true }
 )
-
-const createNode = (position: Position) => {
-  return CanvasNode(position, viewport)
-}
 
 const onDragOver = (ev: DragEvent) => {
   ev.preventDefault()

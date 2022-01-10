@@ -1,6 +1,6 @@
 import type { Viewport } from 'pixi-viewport'
 import * as PIXI from 'pixi.js'
-import type { InteractionData } from 'pixi.js'
+import type { InteractionData, InteractionEvent } from 'pixi.js'
 import { Position } from '../types'
 
 const CanvasNode = ({ x, y }: Position, viewport: Viewport) => {
@@ -21,9 +21,10 @@ const CanvasNode = ({ x, y }: Position, viewport: Viewport) => {
     isDragging = false
     data = ev.data
   }
-  const onDragEnd = () => {
+  const onDragEnd = (ev: InteractionEvent) => {
     if (isDragging) {
-      node.emit('drop', node)
+      const { x, y } = ev.data.getLocalPosition(viewport)
+      node.emit('drop', { el: node, event: ev, x, y })
     }
     isDragging = false
     data = null
