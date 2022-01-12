@@ -9,22 +9,25 @@ const { viewport } = useCanvas()
 
 const useNodes = () => {
   const getNodeById = (id: string) => nodes.value.find((n) => n.id === id)
+  const getIndexById = (id: string) => nodes.value.findIndex((n) => n.id === id)
 
   const addNode = ({ x, y }: Position, title = '') => {
-    const canvasEl = CanvasNode({ x, y }, viewport)
-    const newNode: NodeModel = { title, id: uuid(), canvasEl }
+    const id = uuid()
+    const newNode: NodeModel = { title, id, x, y }
+    const canvasEl = CanvasNode({ x, y, id })
+    viewport.addChild(canvasEl)
+    console.log('newNode', newNode)
     nodes.value = [...nodes.value, newNode]
   }
 
   const updateNodePosition = (id: string, { x, y }: Position): NodeModel => {
-    let node = getNodeById(id)
+    const node = getNodeById(id)
+    const index = getIndexById(id)
     if (node) {
-      node.x = x
-      node.y = y
-
-      return node
+      const updatedNode: NodeModel = { ...node, x, y }
+      nodes.value = [...nodes.value.slice(0, index), updatedNode, ...nodes.value.slice(index + 1)]
+      return updatedNode
     }
-
     throw Error('Node not found')
   }
 

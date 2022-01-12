@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { Application } from 'pixi.js'
-import { Viewport } from 'pixi-viewport'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import CanvasNode from './CanvasNode'
 import useNodes from '../composables/useNodes'
 import useLinks from '../composables/useLinks'
@@ -17,40 +15,24 @@ const { viewport, init } = useCanvas()
 onMounted(() => {
   const canvas = document.getElementById('canvas')!
   init(canvas)
-  render()
+  renderInitial()
 })
 
-const render = () => {
+const renderInitial = () => {
   nodes.value.forEach(({ x, y, id }) => {
-    const node = CanvasNode({ x, y }, viewport)
-    node.on('drop', (ev) => {
-      updateNodePosition(id, { x: ev.x, y: ev.y })
-      emit('element-moved', ev)
-    })
-    node.on('clicked', (ev) => {
-      emit('element-clicked', ev)
-    })
-
+    const node = CanvasNode({ x, y, id })
     viewport.addChild(node)
   })
-
-  // links.value.forEach((link) => {
-  //   const from = getNodeById(link.from)
-  //   const to = getNodeById(link.to)
-  //   if (from && to) {
-  //     const link = CanvasLink({ from, to }, viewport)
-  //     viewport.addChild(link)
-  //   }
-  // })
+  links.value.forEach((link) => {
+    // const from = getNodeById(link.from)
+    // const to = getNodeById(link.to)
+    // if (from && to) {
+      const newLink = CanvasLink({ from: link.from, to: link.to })
+      console.log('newLink', newLink);
+      viewport.addChild(newLink.value!)
+    // }
+  })
 }
-
-watch(
-  [nodes, links],
-  () => {
-    render()
-  },
-  { deep: true }
-)
 
 const onDragOver = (ev: DragEvent) => {
   ev.preventDefault()
