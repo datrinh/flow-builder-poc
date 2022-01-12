@@ -1,10 +1,10 @@
 import type { Viewport } from 'pixi-viewport'
-import * as PIXI from 'pixi.js'
+import { Sprite, Texture } from 'pixi.js'
 import type { InteractionData, InteractionEvent } from 'pixi.js'
 import { Position } from '../types'
 
 const CanvasNode = ({ x, y }: Position, viewport: Viewport) => {
-  const node = new PIXI.Sprite(PIXI.Texture.WHITE)
+  const node = new Sprite(Texture.WHITE)
   node.position.set(x, y)
   node.anchor.set(0.5)
   node.width = 100
@@ -16,15 +16,17 @@ const CanvasNode = ({ x, y }: Position, viewport: Viewport) => {
   let isDragging = false
   let data: InteractionData | null = null
 
-  const onDragStart = (ev) => {
+  const onDragStart = (ev: InteractionEvent) => {
     ev.stopPropagation()
     isDragging = false
     data = ev.data
   }
   const onDragEnd = (ev: InteractionEvent) => {
+    const { x, y } = ev.data.getLocalPosition(viewport)
     if (isDragging) {
-      const { x, y } = ev.data.getLocalPosition(viewport)
       node.emit('drop', { el: node, event: ev, x, y })
+    } else {
+      node.emit('clicked', { el: node, event: ev, x, y })
     }
     isDragging = false
     data = null

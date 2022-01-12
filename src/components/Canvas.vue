@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import * as PIXI from 'pixi.js'
+import { Application } from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
 import { onMounted, ref, watch } from 'vue'
-import { Application } from 'pixi.js'
 import CanvasNode from './CanvasNode'
 import useNodes from '../composables/useNodes'
+import useLinks from '../composables/useLinks'
+import CanvasLink from './CanvasLink'
 
-const { nodes, updateNodePosition, addNode } = useNodes()
+const { nodes, updateNodePosition, addNode, getNodeById } = useNodes()
+const { links } = useLinks()
 const emit = defineEmits(['element-clicked', 'canvas-clicked', 'element-dropped', 'element-moved'])
 
 const canvas = ref<HTMLCanvasElement>()
@@ -18,7 +20,7 @@ onMounted(() => {
 })
 
 const init = () => {
-  app = new PIXI.Application({
+  app = new Application({
     width: window.innerWidth,
     height: window.innerHeight,
     backgroundColor: 0xf3f3f3,
@@ -40,9 +42,6 @@ const init = () => {
     worldHeight: 1000,
     interaction: app.renderer.plugins.interaction,
   })
-  viewport.on('clicked', (ev) => {
-    emit('canvas-clicked', { x: ev.world.x, y: ev.world.y, ev: ev })
-  })
 
   app.stage.addChild(viewport)
 
@@ -53,7 +52,9 @@ const init = () => {
 }
 
 const render = () => {
+  console.log('viewport', viewport.children)
   viewport.removeChildren()
+  console.log('viewport', viewport.children)
 
   nodes.value.forEach(({ x, y, id }) => {
     const node = CanvasNode({ x, y }, viewport)
@@ -61,13 +62,25 @@ const render = () => {
       updateNodePosition(id, { x: ev.x, y: ev.y })
       emit('element-moved', ev)
     })
+    node.on('clicked', (ev) => {
+      emit('element-clicked', ev)
+    })
 
     viewport.addChild(node)
+  })
+
+  links.value.forEach((link) => {
+    const from = getNodeById(link.from)
+    const to = getNodeById(link.to)
+    if (from && to) {
+      const link = CanvasLink({ from, to }, viewport)
+      viewport.addChild(link)
+    }
   })
 }
 
 watch(
-  nodes,
+  [nodes, links],
   () => {
     render()
   },

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import Canvas from './components/Canvas.vue'
 import useData from './composables/useNodes'
+import useLinks from './composables/useLinks'
 
 const { nodes } = useData()
+const { links, addLink } = useLinks()
 
 const onElementClicked = (ev) => {
   console.log('el clicked', ev)
@@ -12,15 +14,26 @@ const onElementClicked = (ev) => {
 const onDrag = (ev: DragEvent) => {
   ev.dataTransfer!.setData('text/plain', 'new-node')
 }
+const onAddLink = () => {
+  const [firstNode, secondNode] = nodes.value
+  addLink(firstNode.id, secondNode.id)
+}
 </script>
 
 <template>
   <div>
     <Canvas @element-clicked="onElementClicked"></Canvas>
-    <div class="fixed top-4 right-4 h-[50vh] w-60 bg-white rounded-sm p-4 shadow-lg overflow-auto">
-      <h1>Widget</h1>
+    <div class="fixed top-4 right-4 h-[40vh] w-60 bg-white rounded-sm p-4 shadow-lg overflow-auto">
+      <h1>Nodes</h1>
       <pre>
         {{ nodes }}
+      </pre>
+    </div>
+    <div class="fixed bottom-4 right-4 h-[40vh] w-60 bg-white rounded-sm p-4 shadow-lg overflow-auto">
+      <h1>Links</h1>
+      <button @click="onAddLink">add</button>
+      <pre>
+        {{ links }}
       </pre>
     </div>
 

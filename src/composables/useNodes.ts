@@ -26,6 +26,7 @@ const useNodes = () => {
 
   return {
     nodes,
+    getNodeById,
     addNode,
     updateNodePosition,
   }
