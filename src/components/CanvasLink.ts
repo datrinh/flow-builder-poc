@@ -42,8 +42,23 @@ const CanvasLink = ({ from, to }: CanvasLinkProps) => {
     if (fromNode.value && toNode.value) {
       line.clear()
       line.lineStyle({ width: 2 })
-      line.moveTo(fromX, fromNode.value.y)
-      line.lineTo(toX, toNode.value.y)
+
+      // Simple Line
+      // line.moveTo(fromX, fromNode.value.y)
+      // line.lineTo(toX, toNode.value.y)
+
+      // Bezier
+      line.moveTo(0, 0)
+      line.bezierCurveTo(
+        (toX - fromX) / 2,
+        0,
+        (toX - fromX) / 2,
+        toNode.value.y - fromNode.value.y,
+        toX - fromX,
+        toNode.value.y - fromNode.value.y
+      )
+      line.x = fromX
+      line.y = fromNode.value.y
     }
   })
 
