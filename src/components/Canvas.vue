@@ -28,8 +28,8 @@ const renderInitial = () => {
     // const to = getNodeById(link.to)
     // if (from && to) {
       const newLink = CanvasLink({ from: link.from, to: link.to })
-      console.log('newLink', newLink);
-      viewport.addChild(newLink.value!)
+      // console.log('newLink', newLink);
+      viewport.addChild(newLink)
     // }
   })
 }
