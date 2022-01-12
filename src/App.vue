@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import Canvas from './components/Canvas.vue'
-import useData from './composables/useNodes'
+import useNodes from './composables/useNodes'
 import useLinks from './composables/useLinks'
 
-const { nodes } = useData()
+const { nodes } = useNodes()
 const { links, addLink } = useLinks()
 
 const onElementClicked = (ev) => {
