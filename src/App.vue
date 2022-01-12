@@ -15,8 +15,10 @@ const onDrag = (ev: DragEvent) => {
   ev.dataTransfer!.setData('text/plain', 'new-node')
 }
 const onAddLink = () => {
-  const [firstNode, secondNode] = nodes.value
+  const [firstNode, secondNode, third] = nodes.value
   addLink(firstNode.id, secondNode.id)
+  addLink(secondNode.id, third.id)
+  addLink(firstNode.id, third.id)
 }
 </script>
 
