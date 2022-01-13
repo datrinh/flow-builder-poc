@@ -42,7 +42,6 @@ const onDropFromOutside = (ev: DragEvent) => {
   const data = ev.dataTransfer?.getData('text/plain')
   if (data === 'new-node') {
     const { x, y } = viewport.toLocal({ x: ev.clientX, y: ev.clientY })
-    addNode({ x, y })
     emit('element-dropped', { x, y })
   }
 }

@@ -7,16 +7,21 @@ import useCanvas from './useCanvas'
 const nodes = useStorage<NodeModel[]>('nodes', [])
 const { viewport } = useCanvas()
 
+type AddNodeProps = Omit<NodeModel, 'id'> & { id?: string }
+
 const useNodes = () => {
   const getNodeById = (id: string) => nodes.value.find((n) => n.id === id)
   const getIndexById = (id: string) => nodes.value.findIndex((n) => n.id === id)
 
-  const addNode = ({ x, y }: Position, title = '') => {
-    const id = uuid()
-    const newNode: NodeModel = { title, id, x, y }
+  const addNode = (props: AddNodeProps) => {
+    // create data model
+    const { data, x, y, id = uuid() } = props
+    const newNode: NodeModel = { data, id, x, y }
+    nodes.value = [...nodes.value, newNode]
+
+    // create corresponding canvas el
     const canvasEl = CanvasNode({ x, y, id })
     viewport.addChild(canvasEl)
-    nodes.value = [...nodes.value, newNode]
   }
 
   const updateNodePosition = (id: string, { x, y }: Position): NodeModel => {

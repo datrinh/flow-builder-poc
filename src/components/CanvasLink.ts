@@ -37,9 +37,8 @@ const CanvasLink = ({ from, to }: CanvasLinkProps) => {
   }
 
   watchEffect(() => {
-    const { fromX, toX } = calcPosX()
-
     if (fromNode.value && toNode.value) {
+      const { fromX, toX } = calcPosX()
       line.clear()
       line.lineStyle({ width: 2 })
 

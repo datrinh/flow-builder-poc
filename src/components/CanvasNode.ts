@@ -1,4 +1,4 @@
-import { Sprite, Texture } from 'pixi.js'
+import { Sprite, Text, Texture } from 'pixi.js'
 import type { InteractionData, InteractionEvent } from 'pixi.js'
 import useCanvas from '../composables/useCanvas'
 import useNodes from '../composables/useNodes'
@@ -10,7 +10,7 @@ interface CanvasNodeProps {
 }
 
 const { viewport } = useCanvas()
-const { updateNodePosition } = useNodes()
+const { updateNodePosition, getNodeById } = useNodes()
 
 const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   const node = new Sprite(Texture.WHITE)
@@ -22,6 +22,18 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   node.interactive = true
   node.buttonMode = true
   node.name = id
+
+  const label = getNodeById(id)?.data.title || ''
+  const text = new Text(label, {
+    fontSize: 3,
+    fill: '#000',
+    // breakWords: true,
+    wordWrap: true,
+    wordWrapWidth: node.width * (0.8 / window.devicePixelRatio),
+  })
+  text.anchor.set(0.5, 1)
+  text.resolution = 6
+  node.addChild(text)
 
   let isDragging = false
   let data: InteractionData | null = null

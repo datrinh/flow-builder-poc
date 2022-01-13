@@ -5,7 +5,9 @@ export interface Position {
 
 export interface NodeModel {
   id: string
-  title: string
   x: number
   y: number
+  data: {
+    title: string
+  }
 }
