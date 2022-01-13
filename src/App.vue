@@ -50,7 +50,7 @@ const onAddLink = () => {
   <div>
     <Canvas @element-dropped="onCardDropped"></Canvas>
     <div class="fixed top-4 right-4 h-[40vh] w-60 bg-white rounded-sm p-4 shadow-lg overflow-auto">
-      <h1>Nodes</h1>
+      <h1>Nodes ({{ nodes.length }})</h1>
       <button @click="createMocks" class="border p-1">Generate Random Nodes</button>
       <button @click="reset" class="border p-1">Reset</button>
       <pre>
@@ -58,7 +58,7 @@ const onAddLink = () => {
       </pre>
     </div>
     <div class="fixed bottom-4 right-4 h-[40vh] w-60 bg-white rounded-sm p-4 shadow-lg overflow-auto">
-      <h1>Links</h1>
+      <h1>Links ({{ links.length }})</h1>
       <!-- <button @click="onAddLink" class="border p-1">add</button> -->
       <pre>
         {{ links }}
