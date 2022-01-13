@@ -9,12 +9,14 @@
   },
   "dependencies": {
     "@vueuse/core": "^7.5.3",
+    "d3": "^7.3.0",
     "pixi-viewport": "^4.34.4",
     "pixi.js": "^6.2.1",
     "uuid": "^8.3.2",
     "vue": "^3.2.26"
   },
   "devDependencies": {
+    "@types/d3": "^7.1.0",
     "@types/uuid": "^8.3.4",
     "@vitejs/plugin-vue": "^2.0.1",
     "autoprefixer": "^10.4.0",

@@ -6,7 +6,7 @@ import useCanvas from './useCanvas'
 
 type LinkType = 'directed' | 'undirected'
 
-interface Link {
+export interface Link {
   id: string
   from: string
   to: string
