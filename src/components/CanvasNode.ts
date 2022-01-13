@@ -2,6 +2,7 @@ import { Sprite, Text, Texture } from 'pixi.js'
 import type { InteractionData, InteractionEvent } from 'pixi.js'
 import useCanvas from '../composables/useCanvas'
 import useNodes from '../composables/useNodes'
+import { watchEffect } from 'vue'
 
 interface CanvasNodeProps {
   x: number
@@ -13,6 +14,7 @@ const { viewport } = useCanvas()
 const { updateNodePosition, getNodeById } = useNodes()
 
 const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
+  const nodeModel = getNodeById(id)
   const node = new Sprite(Texture.WHITE)
   node.position.set(x, y)
   node.anchor.set(0.5)
@@ -23,7 +25,7 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   node.buttonMode = true
   node.name = id
 
-  const label = getNodeById(id)?.data.title || ''
+  const label = nodeModel?.data.title || ''
   const text = new Text(label, {
     fontSize: 3,
     fill: '#000',
@@ -69,6 +71,13 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
     .on('pointerup', onDragEnd)
     .on('pointerupoutside', onDragEnd)
     .on('pointermove', onDragMove)
+
+  watchEffect(() => {
+    if (nodeModel) {
+      node.x = nodeModel.x
+      node.y = nodeModel.y
+    }
+  })
 
   return node
 }

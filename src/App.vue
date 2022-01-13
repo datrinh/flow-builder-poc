@@ -7,7 +7,7 @@ import { Position } from './types'
 
 const { nodes, addNode } = useNodes()
 const { links, addLink } = useLinks()
-const { viewport } = useCanvas()
+const { viewport, autoLayout } = useCanvas()
 
 // const onElementClicked = (ev) => {
 //   console.log('el clicked', ev)
@@ -53,6 +53,7 @@ const onAddLink = () => {
       <h1>Nodes ({{ nodes.length }})</h1>
       <button @click="createMocks" class="border p-1">Generate Random Nodes</button>
       <button @click="reset" class="border p-1">Reset</button>
+      <button @click="autoLayout(nodes, links)" class="border p-1">Auto Layout</button>
       <pre>
         {{ nodes }}
       </pre>
