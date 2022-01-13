@@ -6,7 +6,7 @@ import useLinks from '../composables/useLinks'
 import CanvasLink from './CanvasLink'
 import useCanvas from '../composables/useCanvas'
 
-const { nodes, updateNodePosition, addNode, getNodeById } = useNodes()
+const { nodes, addNode, getNodeById } = useNodes()
 const { links } = useLinks()
 const emit = defineEmits(['element-clicked', 'canvas-clicked', 'element-dropped', 'element-moved'])
 
@@ -24,13 +24,8 @@ const renderInitial = () => {
     viewport.addChild(node)
   })
   links.value.forEach((link) => {
-    // const from = getNodeById(link.from)
-    // const to = getNodeById(link.to)
-    // if (from && to) {
-      const newLink = CanvasLink({ from: link.from, to: link.to })
-      // console.log('newLink', newLink);
-      viewport.addChild(newLink)
-    // }
+    const newLink = CanvasLink({ from: link.from, to: link.to })
+    viewport.addChild(newLink)
   })
 }
 

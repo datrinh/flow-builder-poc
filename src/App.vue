@@ -15,11 +15,13 @@ const { viewport, autoLayout } = useCanvas()
 // }
 
 const createMocks = () => {
+  // create random nodes
   for (let i = 0; i <= 50; i++) {
     const x = Math.random() * 1000
     const y = Math.random() * 1000
-    addNode({ x, y, data: { title: 'Test Title' } })
+    addNode({ x, y, data: { title: `Test Title ${i}` } })
   }
+  // create random links
   nodes.value.forEach(node => {
     const rndLinkIndex = Math.floor(Math.random() * nodes.value.length)
     addLink(node.id, nodes.value?.[rndLinkIndex].id)
@@ -38,12 +40,9 @@ const onDragCard = (ev: DragEvent) => {
 const onCardDropped = ({ x, y }: Position) => {
   addNode({ x, y, data: { title: 'Test Title' } })
 }
-const onAddLink = () => {
-  const [firstNode, secondNode, third] = nodes.value
-  addLink(firstNode.id, secondNode.id)
-  addLink(secondNode.id, third.id)
-  addLink(firstNode.id, third.id)
-}
+const onAutoLayout = () => {
+  autoLayout(nodes.value, links.value)
+};
 </script>
 
 <template>
@@ -53,14 +52,13 @@ const onAddLink = () => {
       <h1>Nodes ({{ nodes.length }})</h1>
       <button @click="createMocks" class="border p-1">Generate Random Nodes</button>
       <button @click="reset" class="border p-1">Reset</button>
-      <button @click="autoLayout(nodes, links)" class="border p-1">Auto Layout</button>
+      <button @click="onAutoLayout" class="border p-1">Auto Layout</button>
       <pre>
         {{ nodes }}
       </pre>
     </div>
     <div class="fixed bottom-4 right-4 h-[40vh] w-60 bg-white rounded-sm p-4 shadow-lg overflow-auto">
       <h1>Links ({{ links.length }})</h1>
-      <!-- <button @click="onAddLink" class="border p-1">add</button> -->
       <pre>
         {{ links }}
       </pre>

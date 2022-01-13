@@ -26,18 +26,20 @@ const useNodes = () => {
 
   const updateNodePosition = (id: string, { x, y }: Position): NodeModel => {
     const node = getNodeById(id)
-    const index = getIndexById(id)
     if (node) {
-      const updatedNode: NodeModel = { ...node, x, y }
-      nodes.value = [...nodes.value.slice(0, index), updatedNode, ...nodes.value.slice(index + 1)]
-      return updatedNode
+      node.x = x
+      node.y = y
+
+      return node
     }
+
     throw Error('Node not found')
   }
 
   return {
     nodes,
     getNodeById,
+    getIndexById,
     addNode,
     updateNodePosition,
   }

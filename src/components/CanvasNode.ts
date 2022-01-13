@@ -48,7 +48,6 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   const onDragEnd = (ev: InteractionEvent) => {
     const { x, y } = ev.data.getLocalPosition(viewport)
     if (isDragging) {
-      // updateNodePosition(node.name, { x, y })
       node.emit('drop', { el: node, event: ev, x, y })
     } else {
       node.emit('clicked', { el: node, event: ev, x, y })
