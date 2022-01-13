@@ -43,7 +43,7 @@ const useCanvas = () => {
       .force(
         'link',
         forceLink(links.map((l) => ({ source: l.from, target: l.to }))) // This force provides links between nodes
-          .id((d) => d.id) // This sets the node id accessor to the specified function. If not specified, will default to the index of a node.
+          .id((d) => (d as Link).id) // This sets the node id accessor to the specified function. If not specified, will default to the index of a node.
           .distance(50)
       )
       .force('charge', forceManyBody().strength(-500)) // This adds repulsion (if it's negative) between nodes.
