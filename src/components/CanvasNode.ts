@@ -22,10 +22,10 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   container.buttonMode = true
   container.interactive = true
   container.position.set(x, y)
+  container.pivot.x = container.width / 2
+  container.pivot.y = container.height / 2
 
   const node = new Sprite(Texture.WHITE)
-  // node.position.set(x, y)
-  // node.anchor.set(0.5)
   node.width = 100
   node.height = 100
   node.tint = 0x00ff00
@@ -82,7 +82,6 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
 
   const { render } = CanvasPort(container)
   render()
-  // console.log('leftPort', leftPort)
 
   watchEffect(() => {
     if (nodeModel) {
