@@ -16,7 +16,7 @@ const { viewport, autoLayout } = useCanvas()
 
 const createMocks = () => {
   // create random nodes
-  for (let i = 0; i <= 50; i++) {
+  for (let i = 0; i <= 3; i++) {
     const x = Math.random() * 1000
     const y = Math.random() * 1000
     addNode({ x, y, data: { title: `Test Title ${i}` } })
