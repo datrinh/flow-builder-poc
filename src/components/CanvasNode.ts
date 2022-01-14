@@ -80,8 +80,13 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
     .on('pointerupoutside', onDragEnd)
     .on('pointermove', onDragMove)
 
-  const { render } = CanvasPort(container)
-  render()
+  const { leftPort, rightPort } = CanvasPort(container)
+  rightPort.on('pointerup', () => {
+    container.emit('port-clicked')
+    // console.log('ev')
+  })
+  container.addChild(leftPort)
+  container.addChild(rightPort)
 
   watchEffect(() => {
     if (nodeModel) {

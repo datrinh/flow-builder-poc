@@ -17,15 +17,6 @@ const CanvasLink = ({ from, to }: CanvasLinkProps) => {
   const fromNode = computed(() => getNodeById(from))
   const toNode = computed(() => getNodeById(to))
 
-  // const fromBounds = viewport.getChildByName(from).getBounds()
-  // const toBounds = viewport.getChildByName(to).getBounds()
-
-  // const fromPortPos = (viewport.getChildByName(from) as Container).getChildByName('right').toGlobal(viewport)
-  // const toPortPos = (viewport.getChildByName(to) as Container).getChildByName('left').toGlobal(viewport)
-
-  // console.log('(', (viewport.getChildByName(from) as Container).getChildByName('right').toGlobal())
-  // console.log('fromPort', fromPort.toGlobal(viewport))
-
   // Decide which border side to attach link to
   // const calcPosX = () => {
   //   let fromX
@@ -44,8 +35,11 @@ const CanvasLink = ({ from, to }: CanvasLinkProps) => {
   // }
 
   const renderLine = () => {
-    const fromPortPos = (viewport.getChildByName(from) as Container).getChildByName('right').toGlobal(viewport)
-    const toPortPos = (viewport.getChildByName(to) as Container).getChildByName('left').toGlobal(viewport)
+    const fromPort = (viewport.getChildByName(from) as Container).getChildByName('right')
+    const toPort = (viewport.getChildByName(to) as Container).getChildByName('left')
+    const toPortPos = viewport.toLocal(toPort.getGlobalPosition())
+    const fromPortPos = viewport.toLocal(fromPort.getGlobalPosition())
+
     line.clear()
     line.lineStyle({ width: 2, join: LINE_JOIN.ROUND, cap: LINE_CAP.ROUND })
     // 90 deg line

@@ -38,10 +38,10 @@ const createPort = ({ x, y, radius = 5, color = 0xff0000, width = 2, id = uuid()
   port.x = x
   port.y = y
 
-  port.on('pointerup', (ev: InteractionEvent) => {
-    startLink()
-    console.log('ev', ev)
-  })
+  // port.on('pointerup', (ev: InteractionEvent) => {
+  //   startLink()
+  //   console.log('ev', ev)
+  // })
 
   return port
 }
