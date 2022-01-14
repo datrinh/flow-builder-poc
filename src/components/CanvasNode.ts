@@ -27,14 +27,13 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
 
   const label = nodeModel?.data.title || ''
   const text = new Text(label, {
-    fontSize: 3,
+    fontSize: 2,
     fill: '#000',
-    // breakWords: true,
     wordWrap: true,
     wordWrapWidth: node.width * (0.8 / window.devicePixelRatio),
   })
   text.anchor.set(0.5, 1)
-  text.resolution = 6
+  text.resolution = 10
   node.addChild(text)
 
   let isDragging = false

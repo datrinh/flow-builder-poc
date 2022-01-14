@@ -10,7 +10,7 @@ let app = new PIXI.Application({
   width: window.innerWidth,
   height: window.innerHeight,
   backgroundColor: 0xf3f3f3,
-  antialias: true,
+  // antialias: true,
 })
 const viewport = new Viewport({
   screenWidth: window.innerWidth,
@@ -38,20 +38,29 @@ const useCanvas = () => {
     )
   }
 
-  const autoLayout = (nodes: NodeModel[], links: Link[]) => {
+  const forceLayout = (nodes: NodeModel[], links: Link[]) => {
     const simulation = forceSimulation(nodes)
       .force(
         'link',
-        forceLink(links.map((l) => ({ source: l.from, target: l.to }))) // This force provides links between nodes
-          .id((d) => (d as Link).id) // This sets the node id accessor to the specified function. If not specified, will default to the index of a node.
+        forceLink(links.map((l) => ({ source: l.from, target: l.to })))
+          .id((d) => (d as Link).id)
           .distance(50)
       )
-      .force('charge', forceManyBody().strength(-500)) // This adds repulsion (if it's negative) between nodes.
+      .force('charge', forceManyBody().strength(-2000))
       .force('center', forceCenter(viewport.width / 2, viewport.height / 2))
       .force('collision', forceCollide().radius(100).iterations(2))
       .velocityDecay(0.8)
 
     return simulation
+  }
+
+  const treeLayout = (nodes: NodeModel[], links: Link[]) => {
+    // TODO
+  }
+
+  const autoLayout = (nodes: NodeModel[], links: Link[]) => {
+    forceLayout(nodes, links)
+    // treeLayout(nodes, links)
   }
 
   return {

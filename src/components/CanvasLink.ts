@@ -1,7 +1,8 @@
-import { Graphics } from 'pixi.js'
+import { LINE_JOIN, LINE_CAP } from 'pixi.js'
 import { computed, ref, watchEffect } from 'vue'
 import useCanvas from '../composables/useCanvas'
 import useNodes from '../composables/useNodes'
+import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
 
 interface CanvasLinkProps {
   from: string
@@ -40,8 +41,7 @@ const CanvasLink = ({ from, to }: CanvasLinkProps) => {
     if (fromNode.value && toNode.value) {
       const { fromX, toX } = calcPosX()
       line.clear()
-      line.lineStyle({ width: 2 })
-
+      line.lineStyle({ width: 2, join: LINE_JOIN.ROUND, cap: LINE_CAP.ROUND })
       // Simple Line
       // line.moveTo(fromX, fromNode.value.y)
       // line.lineTo(toX, toNode.value.y)
