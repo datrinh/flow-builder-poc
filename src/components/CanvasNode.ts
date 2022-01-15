@@ -1,4 +1,6 @@
 import { Container, Sprite, Text, Texture } from 'pixi.js'
+import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
+import { DropShadowFilter } from '@pixi/filter-drop-shadow'
 import type { InteractionData, InteractionEvent } from 'pixi.js'
 import useCanvas from '../composables/useCanvas'
 import useNodes from '../composables/useNodes'
@@ -11,8 +13,21 @@ interface CanvasNodeProps {
   id: string // ref to the data model
 }
 
-const { viewport } = useCanvas()
+const { viewport, app } = useCanvas()
 const { updateNodePosition, getNodeById } = useNodes()
+
+const createWrapper = (id: string) => {
+  const node = new Graphics()
+  node.beginFill(0xffffff)
+  node.drawRoundedRect(0, 0, 150, 100, 16)
+  node.endFill()
+  node.filters = [new DropShadowFilter({ rotation: 80 })]
+  node.interactive = true
+  node.buttonMode = true
+  node.name = id
+
+  return node
+}
 
 const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   const nodeModel = getNodeById(id)
@@ -25,13 +40,7 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   container.pivot.x = container.width / 2
   container.pivot.y = container.height / 2
 
-  const node = new Sprite(Texture.WHITE)
-  node.width = 100
-  node.height = 100
-  node.tint = 0x00ff00
-  node.interactive = true
-  node.buttonMode = true
-  node.name = id
+  const node = createWrapper(id)
   container.addChild(node)
 
   const label = nodeModel?.data.title || ''
@@ -39,7 +48,7 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
     fontSize: 16,
     fill: '#000',
     wordWrap: true,
-    wordWrapWidth: node.width * (0.8 / window.devicePixelRatio),
+    wordWrapWidth: node.width,
   })
   text.x = 10
   text.y = 15
