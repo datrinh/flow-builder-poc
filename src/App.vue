@@ -68,7 +68,9 @@ const onAutoLayout = () => {
     <div
       draggable="true"
       @dragstart="onDragCard"
-      class="fixed bottom-0 left-4 w-60 h-60 bg-[#00FF00] shadow-xl translate-y-40 hover:translate-y-28 transition-transform"
-    ></div>
+      class="fixed bottom-0 left-4 p-4 w-60 h-60 bg-white shadow-xl translate-y-40 hover:translate-y-28 transition-transform cursor-grab"
+    >
+      New Node
+    </div>
   </div>
 </template>

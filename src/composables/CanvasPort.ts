@@ -26,7 +26,7 @@ const startLink = () => {
   // const line = new Graphics()
 }
 
-const createPort = ({ x, y, radius = 5, color = 0xff0000, width = 2, id = uuid() }: CreatePortArgs) => {
+const createPort = ({ x, y, radius = 5, color = 0xfff171, width = 2, id = uuid() }: CreatePortArgs) => {
   const port = new Graphics()
   port.lineStyle({ width, color })
   port.beginFill(color, 1)
