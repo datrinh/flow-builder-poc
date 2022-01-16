@@ -21,10 +21,21 @@ const createWrapper = (id: string) => {
   node.beginFill(0xffffff)
   node.drawRoundedRect(0, 0, 150, 100, 16)
   node.endFill()
-  node.filters = [new DropShadowFilter({ rotation: 80 })]
+  node.filters = [new DropShadowFilter({ rotation: 90, blur: 1, color: 0xababab })]
   node.interactive = true
   node.buttonMode = true
   node.name = id
+
+  node.on('pointerover', () => {
+    node.lineStyle(2, 0xfff171)
+    node.drawRoundedRect(0, 0, 150, 100, 16)
+  })
+
+  node.on('pointerout', () => {
+    node.clear()
+    node.beginFill(0xffffff)
+    node.drawRoundedRect(0, 0, 150, 100, 16)
+  })
 
   return node
 }
@@ -52,7 +63,7 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   })
   text.x = 10
   text.y = 15
-  text.resolution = 10
+  text.resolution = 2
   container.addChild(text)
 
   let isDragging = false
@@ -82,12 +93,17 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
       updateNodePosition(container.name, { x: container.x, y: container.y })
     }
   }
+  const onHover = () => {
+    console.log('ev')
+    node.lineStyle(2, 0xababab)
+  }
 
   container
     .on('pointerdown', onDragStart)
     .on('pointerup', onDragEnd)
     .on('pointerupoutside', onDragEnd)
     .on('pointermove', onDragMove)
+    .on('pointerover', onHover)
 
   const { leftPort, rightPort } = CanvasPort(container)
   rightPort.on('pointerup', () => {

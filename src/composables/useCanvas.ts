@@ -10,7 +10,9 @@ let app = new PIXI.Application({
   width: window.innerWidth,
   height: window.innerHeight,
   backgroundColor: 0xf3f3f3,
-  // antialias: true,
+  antialias: true,
+  resolution: window.devicePixelRatio,
+  autoDensity: true,
 })
 const viewport = new Viewport({
   screenWidth: window.innerWidth,
