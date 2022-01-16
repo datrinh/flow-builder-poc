@@ -10,7 +10,9 @@ let app = new PIXI.Application({
   width: window.innerWidth,
   height: window.innerHeight,
   backgroundColor: 0xf3f3f3,
-  // antialias: true,
+  antialias: true,
+  resolution: window.devicePixelRatio,
+  autoDensity: true,
 })
 const viewport = new Viewport({
   screenWidth: window.innerWidth,
@@ -23,7 +25,7 @@ const viewport = new Viewport({
 app.stage.addChild(viewport)
 
 // activate plugins
-viewport.drag().pinch().wheel().decelerate()
+viewport.clampZoom({ minWidth: 500, maxWidth: 2000 }).drag().pinch().wheel().decelerate()
 
 const useCanvas = () => {
   const init = (el: HTMLElement) => {

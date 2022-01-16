@@ -16,16 +16,17 @@ const { viewport, autoLayout } = useCanvas()
 
 const createMocks = () => {
   // create random nodes
-  for (let i = 0; i <= 50; i++) {
+  for (let i = 0; i <= 1; i++) {
     const x = Math.random() * 1000
     const y = Math.random() * 1000
     addNode({ x, y, data: { title: `Test Title ${i}` } })
   }
   // create random links
-  nodes.value.forEach(node => {
-    const rndLinkIndex = Math.floor(Math.random() * nodes.value.length)
-    addLink(node.id, nodes.value?.[rndLinkIndex].id)
-  })
+  // nodes.value.forEach(node => {
+  //   const rndLinkIndex = Math.floor(Math.random() * nodes.value.length)
+  //   addLink(node.id, nodes.value?.[rndLinkIndex].id)
+  // })
+  addLink(nodes.value[0].id, nodes.value[1].id)
 }
 
 const reset = () => {
@@ -67,7 +68,9 @@ const onAutoLayout = () => {
     <div
       draggable="true"
       @dragstart="onDragCard"
-      class="fixed bottom-0 left-4 w-60 h-60 bg-[#00FF00] shadow-xl translate-y-40 hover:translate-y-28 transition-transform"
-    ></div>
+      class="fixed bottom-0 left-4 p-4 w-60 h-60 bg-white shadow-xl translate-y-40 hover:translate-y-28 transition-transform cursor-grab"
+    >
+      New Node
+    </div>
   </div>
 </template>
