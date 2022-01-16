@@ -1,4 +1,4 @@
-import { Container, IPointData, Sprite, Text, Texture } from 'pixi.js'
+import { Container, IPointData, Renderer, Sprite, Text, Texture } from 'pixi.js'
 import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
 import { DropShadowFilter } from '@pixi/filter-drop-shadow'
 import type { InteractionData, InteractionEvent } from 'pixi.js'
@@ -6,6 +6,7 @@ import useCanvas from '../composables/useCanvas'
 import useNodes from '../composables/useNodes'
 import { watchEffect } from 'vue'
 import CanvasPort from '../composables/CanvasPort'
+import { fadeIn } from '../animations'
 
 interface CanvasNodeProps {
   x: number
@@ -50,16 +51,18 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   container.position.set(x, y)
   container.pivot.x = container.width / 2
   container.pivot.y = container.height / 2
+  container.alpha = 0
+  fadeIn(container)
 
   const node = createWrapper(id)
   container.addChild(node)
 
-  const label = nodeModel?.data.title || ''
+  const label = `${nodeModel?.data.title} x:${Math.floor(x)} y:${Math.floor(y)}` || ''
   const text = new Text(label, {
     fontSize: 16,
     fill: '#000',
     wordWrap: true,
-    wordWrapWidth: node.width,
+    wordWrapWidth: node.width * 0.8,
   })
   text.x = 10
   text.y = 15

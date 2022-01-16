@@ -1,14 +1,11 @@
-import { useStorage } from '@vueuse/core'
+import { Position, useStorage } from '@vueuse/core'
 import { Container, DisplayObject, Graphics, InteractionEvent } from 'pixi.js'
 import { computed } from 'vue'
 import { NodeModel } from '../types'
 import useCanvas from './useCanvas'
 import { v4 as uuid } from 'uuid'
-
-interface Port {
-  title?: string
-  id: string
-}
+import useNodes from './useNodes'
+import useLinks from './useLinks'
 
 interface CreatePortArgs {
   x: number
@@ -20,10 +17,15 @@ interface CreatePortArgs {
 }
 
 // const ports = useStorage<Port[]>('ports', [])
-// const { viewport } = useCanvas()
+const { viewport } = useCanvas()
+const { addNode } = useNodes()
+const { addLink } = useLinks()
 
-const startLink = () => {
-  // const line = new Graphics()
+const onPortClicked = ({ x, y }: Position, from: Container) => {
+  const margin = 100
+
+  const newNode = addNode({ x: x + margin, y, data: { title: 'From Port' } })
+  addLink(from.name, newNode.id)
 }
 
 const createPort = ({ x, y, radius = 5, color = 0xfff171, width = 2, id = uuid() }: CreatePortArgs) => {
@@ -38,11 +40,6 @@ const createPort = ({ x, y, radius = 5, color = 0xfff171, width = 2, id = uuid()
   port.x = x
   port.y = y
 
-  // port.on('pointerup', (ev: InteractionEvent) => {
-  //   startLink()
-  //   console.log('ev', ev)
-  // })
-
   return port
 }
 
@@ -53,6 +50,12 @@ const CanvasPort = (parent: Container) => {
   const rightPort = createPort({ x: parentBounds.width, y: parentBounds.height / 2, id: 'right' })
   // const topPort = createPort({ x: parentBounds.width / 2, y: 0, id: 'top' })
   // const bottomPort = createPort({ x: parentBounds.width / 2, y: parentBounds.height, id: 'bottom' })
+
+  rightPort.on('pointerup', (ev: InteractionEvent) => {
+    const { x } = viewport.toWorld(ev.data.global)
+    const { y } = parent
+    onPortClicked({ x, y }, parent)
+  })
 
   const render = () => {
     parent.addChild(leftPort)
