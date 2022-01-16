@@ -1,4 +1,4 @@
-import { Container, Sprite, Text, Texture } from 'pixi.js'
+import { Container, IPointData, Sprite, Text, Texture } from 'pixi.js'
 import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
 import { DropShadowFilter } from '@pixi/filter-drop-shadow'
 import type { InteractionData, InteractionEvent } from 'pixi.js'
@@ -68,9 +68,11 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
 
   let isDragging = false
   let data: InteractionData | null = null
+  let dragOffset: IPointData
 
   const onDragStart = (ev: InteractionEvent) => {
     ev.stopPropagation()
+    dragOffset = ev.data.getLocalPosition(node)
     isDragging = false
     data = ev.data
   }
@@ -88,8 +90,8 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
     isDragging = true
     if (isDragging && data) {
       const newPosition = data.getLocalPosition(viewport)
-      container.x = newPosition.x
-      container.y = newPosition.y
+      container.x = newPosition.x - dragOffset.x
+      container.y = newPosition.y - dragOffset.y
       updateNodePosition(container.name, { x: container.x, y: container.y })
     }
   }
