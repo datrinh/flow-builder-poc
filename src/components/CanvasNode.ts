@@ -57,7 +57,8 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   const node = createWrapper(id)
   container.addChild(node)
 
-  const label = `${nodeModel?.data.title} x:${Math.floor(x)} y:${Math.floor(y)}` || ''
+  const label = `${nodeModel?.data.title}` || ''
+  // const label = `${nodeModel?.data.title} x:${Math.floor(x)} y:${Math.floor(y)}` || ''
   const text = new Text(label, {
     fontSize: 16,
     fill: '#000',
@@ -99,7 +100,6 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
     }
   }
   const onHover = () => {
-    console.log('ev')
     node.lineStyle(2, 0xababab)
   }
 

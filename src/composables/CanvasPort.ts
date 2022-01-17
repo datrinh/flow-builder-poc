@@ -6,6 +6,7 @@ import useCanvas from './useCanvas'
 import { v4 as uuid } from 'uuid'
 import useNodes from './useNodes'
 import useLinks from './useLinks'
+import { size } from '../animations'
 
 interface CreatePortArgs {
   x: number
@@ -39,6 +40,13 @@ const createPort = ({ x, y, radius = 5, color = 0xfff171, width = 2, id = uuid()
   port.name = id
   port.x = x
   port.y = y
+
+  port.on('pointerover', () => {
+    size(port, 20, 100)
+  })
+  port.on('pointerout', () => {
+    size(port, 10, 100)
+  })
 
   return port
 }
