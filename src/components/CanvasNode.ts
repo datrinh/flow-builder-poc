@@ -7,6 +7,7 @@ import useNodes from '../composables/useNodes'
 import { watchEffect } from 'vue'
 import CanvasPort from '../composables/CanvasPort'
 import { fadeIn } from '../animations'
+import enhanceDragDrop from '../composables/enhanceDragDrop'
 
 interface CanvasNodeProps {
   x: number
@@ -14,37 +15,37 @@ interface CanvasNodeProps {
   id: string // ref to the data model
 }
 
-const { viewport, app } = useCanvas()
+const { viewport } = useCanvas()
 const { updateNodePosition, getNodeById } = useNodes()
 
 const createWrapper = (id: string) => {
-  const node = new Graphics()
-  node.beginFill(0xffffff)
-  node.drawRoundedRect(0, 0, 150, 100, 16)
-  node.endFill()
-  node.filters = [new DropShadowFilter({ rotation: 90, blur: 1, color: 0xababab })]
-  node.interactive = true
-  node.buttonMode = true
-  node.name = id
+  const wrapper = new Graphics()
+  wrapper.beginFill(0xffffff)
+  wrapper.drawRoundedRect(0, 0, 150, 100, 16)
+  wrapper.endFill()
+  wrapper.filters = [new DropShadowFilter({ rotation: 90, blur: 1, color: 0xababab })]
+  wrapper.interactive = true
+  wrapper.buttonMode = true
+  wrapper.name = id
 
-  node.on('pointerover', () => {
-    node.lineStyle(2, 0xfff171)
-    node.drawRoundedRect(0, 0, 150, 100, 16)
+  wrapper.on('pointerover', () => {
+    wrapper.lineStyle(2, 0xfff171)
+    wrapper.drawRoundedRect(0, 0, 150, 100, 16)
   })
 
-  node.on('pointerout', () => {
-    node.clear()
-    node.beginFill(0xffffff)
-    node.drawRoundedRect(0, 0, 150, 100, 16)
+  wrapper.on('pointerout', () => {
+    wrapper.clear()
+    wrapper.beginFill(0xffffff)
+    wrapper.drawRoundedRect(0, 0, 150, 100, 16)
   })
 
-  return node
+  return wrapper
 }
 
 const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   const nodeModel = getNodeById(id)
 
-  const container = new Container()
+  const container = enhanceDragDrop(new Container())
   container.name = id
   container.buttonMode = true
   container.interactive = true
@@ -54,8 +55,8 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   container.alpha = 0
   fadeIn(container)
 
-  const node = createWrapper(id)
-  container.addChild(node)
+  const wrapper = createWrapper(id)
+  container.addChild(wrapper)
 
   const label = `${nodeModel?.data.title}` || ''
   // const label = `${nodeModel?.data.title} x:${Math.floor(x)} y:${Math.floor(y)}` || ''
@@ -63,58 +64,71 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
     fontSize: 16,
     fill: '#000',
     wordWrap: true,
-    wordWrapWidth: node.width * 0.8,
+    wordWrapWidth: wrapper.width * 0.8,
   })
   text.x = 10
   text.y = 15
   text.resolution = 2
   container.addChild(text)
 
-  let isDragging = false
-  let data: InteractionData | null = null
-  let dragOffset: IPointData
+  // let isDragging = false
+  // let data: InteractionData | null = null
+  // let dragOffset: IPointData
 
-  const onDragStart = (ev: InteractionEvent) => {
-    ev.stopPropagation()
-    dragOffset = ev.data.getLocalPosition(node)
-    isDragging = false
-    data = ev.data
-  }
-  const onDragEnd = (ev: InteractionEvent) => {
-    const { x, y } = ev.data.getLocalPosition(viewport)
-    if (isDragging) {
-      container.emit('drop', { el: container, event: ev, x, y })
-    } else {
-      container.emit('clicked', { el: container, event: ev, x, y })
-    }
-    isDragging = false
-    data = null
-  }
+  // const onDragStart = (ev: InteractionEvent) => {
+  //   ev.stopPropagation()
+  // dragOffset = ev.data.getLocalPosition(container)
+  //   isDragging = false
+  //   data = ev.data
+
+  //   container.on('pointermove', onDragMove)
+  // }
+  // const onDragEnd = (ev: InteractionEvent) => {
+  //   const { x, y } = ev.data.getLocalPosition(viewport)
+  //   if (isDragging) {
+  //     container.emit('drop', { el: container, event: ev, x, y })
+  //   } else {
+  //     container.emit('clicked', { el: container, event: ev, x, y })
+  //   }
+  //   isDragging = false
+  //   data = null
+  // }
   const onDragMove = () => {
-    isDragging = true
-    if (isDragging && data) {
-      const newPosition = data.getLocalPosition(viewport)
-      container.x = newPosition.x - dragOffset.x
-      container.y = newPosition.y - dragOffset.y
-      updateNodePosition(container.name, { x: container.x, y: container.y })
-    }
+    // isDragging = true
+    // if (isDragging && data) {
+    // const newPosition = data.getLocalPosition(viewport)
+    // container.x = newPosition.x - dragOffset.x
+    // container.y = newPosition.y - dragOffset.y
+    // updateNodePosition(container.name, { x: container.x, y: container.y })
+    // }
   }
   const onHover = () => {
-    node.lineStyle(2, 0xababab)
+    wrapper.lineStyle(2, 0xababab)
   }
 
   container
-    .on('pointerdown', onDragStart)
-    .on('pointerup', onDragEnd)
-    .on('pointerupoutside', onDragEnd)
-    .on('pointermove', onDragMove)
+    .on('drag-end', (ev) => {
+      updateNodePosition(container.name, { x: container.x, y: container.y })
+    })
+    .on('clicked', (ev) => {
+      console.log('clicked', ev)
+    })
+    .on('drag-move', (ev, offset) => {
+      const newPosition = ev.data.getLocalPosition(viewport)
+      container.x = newPosition.x - offset.x
+      container.y = newPosition.y - offset.y
+    })
+    // .on('pointerdown', onDragStart)
+    // .on('pointerup', onDragEnd)
+    // .on('pointerupoutside', onDragEnd)
+    // .on('pointermove', onDragMove)
     .on('pointerover', onHover)
 
   const { leftPort, rightPort } = CanvasPort(container)
-  rightPort.on('pointerup', () => {
-    container.emit('port-clicked')
-    // console.log('ev')
-  })
+  // rightPort.on('pointerup', () => {
+  //   container.emit('port-clicked')
+  //   // console.log('ev')
+  // })
   container.addChild(leftPort)
   container.addChild(rightPort)
 

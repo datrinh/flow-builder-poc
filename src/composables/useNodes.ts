@@ -9,9 +9,9 @@ const { viewport } = useCanvas()
 
 type AddNodeProps = Omit<NodeModel, 'id'> & { id?: string }
 
-const onPortClicked = () => {
-  console.log('ev')
-}
+// const onPortClicked = () => {
+//   console.log('ev')
+// }
 
 const useNodes = () => {
   const getNodeById = (id: string) => nodes.value.find((n) => n.id === id)
@@ -25,7 +25,7 @@ const useNodes = () => {
 
     // create corresponding canvas el
     const canvasEl = CanvasNode({ x, y, id })
-    canvasEl.on('port-clicked', onPortClicked)
+    // canvasEl.on('port-clicked', onPortClicked)
     viewport.addChild(canvasEl)
 
     return newNode
@@ -49,7 +49,7 @@ const useNodes = () => {
     getIndexById,
     addNode,
     updateNodePosition,
-    onPortClicked,
+    // onPortClicked,
   }
 }
 

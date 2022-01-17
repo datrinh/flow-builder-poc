@@ -9,10 +9,10 @@ const { nodes, addNode } = useNodes()
 const { links, addLink } = useLinks()
 const { viewport, autoLayout } = useCanvas()
 
-// const onElementClicked = (ev) => {
-//   console.log('el clicked', ev)
-//   // removeNode(ev.data.id)
-// }
+const onElementClicked = (ev) => {
+  console.log('el clicked', ev)
+  // removeNode(ev.data.id)
+}
 
 const createMocks = () => {
   // create random nodes
@@ -48,7 +48,7 @@ const onAutoLayout = () => {
 
 <template>
   <div>
-    <Canvas @element-dropped="onCardDropped"></Canvas>
+    <Canvas @element-dropped="onCardDropped" @element-clicked=""></Canvas>
     <div class="fixed top-4 right-4 h-[40vh] w-60 bg-white rounded-sm p-4 shadow-lg overflow-auto">
       <h1>Nodes ({{ nodes.length }})</h1>
       <button @click="createMocks" class="border p-1">Generate Random Nodes</button>

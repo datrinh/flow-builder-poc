@@ -17,23 +17,6 @@ const CanvasLink = ({ from, to }: CanvasLinkProps) => {
   const fromNode = computed(() => getNodeById(from))
   const toNode = computed(() => getNodeById(to))
 
-  // Decide which border side to attach link to
-  // const calcPosX = () => {
-  //   let fromX
-  //   if (fromNode.value!.x < toNode.value!.x) {
-  //     fromX = fromNode.value!.x + fromBounds.width / 2
-  //   } else {
-  //     fromX = fromNode.value!.x - fromBounds.width / 2
-  //   }
-  //   let toX
-  //   if (toNode.value!.x < fromNode.value!.x) {
-  //     toX = toNode.value!.x + toBounds.width / 2
-  //   } else {
-  //     toX = toNode.value!.x - toBounds.width / 2
-  //   }
-  //   return { fromX, toX }
-  // }
-
   const renderLine = () => {
     const fromPort = (viewport.getChildByName(from) as Container).getChildByName('right')
     const toPort = (viewport.getChildByName(to) as Container).getChildByName('left')
