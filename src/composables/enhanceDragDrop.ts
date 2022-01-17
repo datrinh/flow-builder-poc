@@ -1,12 +1,6 @@
 import { Position } from '@vueuse/core'
 import { Container, Graphics, InteractionEvent, Sprite } from 'pixi.js'
 
-interface Handlers {
-  onDragEnd?: () => void
-  onClick?: () => void
-  onMove?: () => void
-}
-
 const enhanceDragDrop = (element: Sprite | Graphics | Container) => {
   let isDown = false
   let isMoving = false
@@ -31,7 +25,6 @@ const enhanceDragDrop = (element: Sprite | Graphics | Container) => {
     const dx = firstPos.x - pos.x
     const dy = firstPos.y - pos.y
     const distance = dx * dx + dy * dy // skip square-root (see above)
-    console.log('distance', distance)
 
     if (distance >= THRESHOLD_RADIUS) {
       isMoving = true

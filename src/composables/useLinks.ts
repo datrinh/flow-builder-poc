@@ -22,13 +22,18 @@ const useLinks = () => {
     const newLink = { from, to, type, id }
     links.value = [...links.value, newLink]
 
-    const canvasEl = CanvasLink({ from, to })
+    const canvasEl = CanvasLink({ from, to, id })
     viewport.addChild(canvasEl)
+  }
+
+  const getConnectedLinksForElement = (elId: string) => {
+    return links.value.filter((link) => link.from === elId || link.to === elId)
   }
 
   return {
     links,
     addLink,
+    getConnectedLinksForElement,
   }
 }
 

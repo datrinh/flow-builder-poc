@@ -25,7 +25,7 @@ const renderInitial = () => {
     viewport.addChild(node)
   })
   links.value.forEach((link) => {
-    const newLink = CanvasLink({ from: link.from, to: link.to })
+    const newLink = CanvasLink({ from: link.from, to: link.to, id: link.id })
     viewport.addChild(newLink)
   })
 }
