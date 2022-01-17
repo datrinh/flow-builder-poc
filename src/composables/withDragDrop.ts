@@ -1,7 +1,7 @@
 import { Position } from '@vueuse/core'
 import { Container, Graphics, InteractionEvent, Sprite } from 'pixi.js'
 
-const enhanceDragDrop = (element: Sprite | Graphics | Container) => {
+const withDragDrop = (element: Sprite | Graphics | Container) => {
   let isDown = false
   let isMoving = false
   let dragOffset: Position
@@ -64,4 +64,4 @@ const enhanceDragDrop = (element: Sprite | Graphics | Container) => {
   return element
 }
 
-export default enhanceDragDrop
+export default withDragDrop

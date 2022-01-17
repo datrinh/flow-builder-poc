@@ -25,7 +25,7 @@ const viewport = new Viewport({
 app.stage.addChild(viewport)
 
 // activate plugins
-viewport.clampZoom({ minWidth: 500, maxWidth: 5000 }).drag().pinch().wheel().decelerate()
+viewport.clampZoom({ minWidth: 800, maxWidth: 5000 }).drag().pinch().wheel().decelerate()
 
 const useCanvas = () => {
   const init = (el: HTMLElement) => {

@@ -8,7 +8,7 @@ import useCanvas from '../composables/useCanvas'
 
 const { nodes, addNode, getNodeById } = useNodes()
 const { links } = useLinks()
-const emit = defineEmits(['element-clicked', 'canvas-clicked', 'element-dropped', 'element-moved'])
+const emit = defineEmits(['element-clicked', 'element-dropped'])
 
 const { viewport, init } = useCanvas()
 
@@ -16,6 +16,20 @@ onMounted(() => {
   const canvas = document.getElementById('canvas')!
   init(canvas)
   renderInitial()
+  listenToNodes()
+})
+
+const listenToNodes = () => {
+  viewport.children.forEach(child => {
+    child.removeListener('clicked-wrapper')
+    child.on('clicked-wrapper', (ev) => {
+      emit('element-clicked', ev)
+    })
+  })
+}
+
+watch(nodes, () => {
+  listenToNodes()
 })
 
 const renderInitial = () => {

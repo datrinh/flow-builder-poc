@@ -3,30 +3,19 @@ import Canvas from './components/Canvas.vue'
 import useNodes from './composables/useNodes'
 import useLinks from './composables/useLinks'
 import useCanvas from './composables/useCanvas'
-import { Position } from './types'
+import { CanvasEvent, NodeModel, Position } from './types'
+import NodeDetail from './components/NodeDetail.vue'
+import { ref } from 'vue'
 
-const { nodes, addNode } = useNodes()
-const { links, addLink } = useLinks()
+const { nodes, addNode, getNodeById, updateNodeData } = useNodes()
+const { links } = useLinks()
 const { viewport, autoLayout } = useCanvas()
 
-const onElementClicked = (ev) => {
-  console.log('el clicked', ev)
-  // removeNode(ev.data.id)
-}
+const selectedNode = ref<NodeModel>()
 
-const createMocks = () => {
-  // create random nodes
-  for (let i = 0; i <= 1; i++) {
-    const x = Math.random() * 1000
-    const y = Math.random() * 1000
-    addNode({ x, y, data: { title: `Test Title ${i}` } })
-  }
-  // create random links
-  // nodes.value.forEach(node => {
-  //   const rndLinkIndex = Math.floor(Math.random() * nodes.value.length)
-  //   addLink(node.id, nodes.value?.[rndLinkIndex].id)
-  // })
-  addLink(nodes.value[0].id, nodes.value[1].id)
+const onElementClicked = (ev: CanvasEvent) => {
+  selectedNode.value = getNodeById(ev.id)
+  console.log('selectedNode', selectedNode.value);
 }
 
 const reset = () => {
@@ -44,16 +33,20 @@ const onCardDropped = ({ x, y }: Position) => {
 const onAutoLayout = () => {
   autoLayout(nodes.value, links.value)
 };
+const onUpdateData = (data: NodeModel['data']) => {
+  updateNodeData(selectedNode.value!.id, data)
+  selectedNode.value = undefined
+};
 </script>
 
 <template>
   <div>
-    <Canvas @element-dropped="onCardDropped" @element-clicked=""></Canvas>
+    <Canvas @element-dropped="onCardDropped" @element-clicked="onElementClicked"></Canvas>
+    <NodeDetail :title="selectedNode.data.title" v-if="!!selectedNode" @close="selectedNode = undefined" @update="onUpdateData"></NodeDetail>
     <div class="fixed top-4 right-4 h-[40vh] w-60 bg-white rounded-sm p-4 shadow-lg overflow-auto">
       <h1>Nodes ({{ nodes.length }})</h1>
-      <button @click="createMocks" class="border p-1">Generate Random Nodes</button>
       <button @click="reset" class="border p-1">Reset</button>
-      <button @click="onAutoLayout" class="border p-1">Auto Layout</button>
+      <!-- <button @click="onAutoLayout" class="border p-1">Auto Layout</button> -->
       <pre>
         {{ nodes }}
       </pre>

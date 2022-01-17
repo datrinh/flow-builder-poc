@@ -1,7 +1,5 @@
-import { Position, useStorage } from '@vueuse/core'
 import { Container, DisplayObject, Graphics, InteractionEvent } from 'pixi.js'
-import { computed } from 'vue'
-import { NodeModel } from '../types'
+import { NodeModel, Position } from '../types'
 import useCanvas from './useCanvas'
 import { v4 as uuid } from 'uuid'
 import useNodes from './useNodes'
@@ -17,7 +15,6 @@ interface CreatePortArgs {
   id?: string
 }
 
-// const ports = useStorage<Port[]>('ports', [])
 const { viewport } = useCanvas()
 const { addNode } = useNodes()
 const { addLink } = useLinks()

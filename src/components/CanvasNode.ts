@@ -1,4 +1,4 @@
-import { Container, IPointData, Renderer, Sprite, Text, Texture } from 'pixi.js'
+import { Container, InteractionEvent, IPointData, Renderer, Sprite, Text, Texture } from 'pixi.js'
 import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
 import { DropShadowFilter } from '@pixi/filter-drop-shadow'
 import useCanvas from '../composables/useCanvas'
@@ -6,7 +6,7 @@ import useNodes from '../composables/useNodes'
 import { computed, watchEffect } from 'vue'
 import CanvasPort from '../composables/CanvasPort'
 import { fadeIn } from '../animations'
-import enhanceDragDrop from '../composables/enhanceDragDrop'
+import withDragDrop from '../composables/withDragDrop'
 import useLinks from '../composables/useLinks'
 import { renderLine } from './CanvasLink'
 
@@ -48,7 +48,7 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   const nodeModel = getNodeById(id)
   const connectedLinks = computed(() => getConnectedLinksForElement(id))
 
-  const container = enhanceDragDrop(new Container())
+  const container = withDragDrop(new Container())
   container.name = id
   container.buttonMode = true
   container.interactive = true
@@ -58,11 +58,29 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   container.alpha = 0
   fadeIn(container)
 
-  const wrapper = createWrapper(id)
+  const wrapper = withDragDrop(createWrapper(id)) as Graphics
+  wrapper
+    .on('drag-end', () => {
+      updateNodePosition(container.name, { x: container.x, y: container.y })
+    })
+    .on('clicked', (ev) => {
+      container.emit('clicked-wrapper', { id, event: ev })
+    })
+    .on('drag-move', (ev, offset) => {
+      const newPosition = ev.data.getLocalPosition(viewport)
+      container.x = newPosition.x - offset.x
+      container.y = newPosition.y - offset.y
+
+      // update connected links
+      connectedLinks.value.forEach(({ from, to, id }) => {
+        const link = viewport.getChildByName(id) as Graphics
+        renderLine(link, { from, to })
+      })
+    })
+
   container.addChild(wrapper)
 
-  const label = `${nodeModel?.data.title}` || ''
-  // const label = `${nodeModel?.data.title} x:${Math.floor(x)} y:${Math.floor(y)}` || ''
+  let label = nodeModel?.data.title || ''
   const text = new Text(label, {
     fontSize: 16,
     fill: '#000',
@@ -78,22 +96,7 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
     wrapper.lineStyle(2, 0xababab)
   }
 
-  container
-    .on('drag-end', () => {
-      updateNodePosition(container.name, { x: container.x, y: container.y })
-    })
-    .on('drag-move', (ev, offset) => {
-      const newPosition = ev.data.getLocalPosition(viewport)
-      container.x = newPosition.x - offset.x
-      container.y = newPosition.y - offset.y
-
-      // update connected links
-      connectedLinks.value.forEach(({ from, to, id }) => {
-        const link = viewport.getChildByName(id) as Graphics
-        renderLine(link, { from, to })
-      })
-    })
-    .on('pointerover', onHover)
+  container.on('pointerover', onHover)
 
   const { leftPort, rightPort } = CanvasPort(container)
   container.addChild(leftPort)
@@ -103,6 +106,7 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
     if (nodeModel) {
       container.x = nodeModel.x
       container.y = nodeModel.y
+      text.text = nodeModel.data.title
     }
   })
 
