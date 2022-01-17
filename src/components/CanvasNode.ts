@@ -3,7 +3,7 @@ import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
 import { DropShadowFilter } from '@pixi/filter-drop-shadow'
 import useCanvas from '../composables/useCanvas'
 import useNodes from '../composables/useNodes'
-import { watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
 import CanvasPort from '../composables/CanvasPort'
 import { fadeIn } from '../animations'
 import enhanceDragDrop from '../composables/enhanceDragDrop'
@@ -46,7 +46,7 @@ const createWrapper = (id: string) => {
 
 const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   const nodeModel = getNodeById(id)
-  const connectedLinks = getConnectedLinksForElement(id)
+  const connectedLinks = computed(() => getConnectedLinksForElement(id))
 
   const container = enhanceDragDrop(new Container())
   container.name = id
@@ -88,7 +88,7 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
       container.y = newPosition.y - offset.y
 
       // update connected links
-      connectedLinks.forEach(({ from, to, id }) => {
+      connectedLinks.value.forEach(({ from, to, id }) => {
         const link = viewport.getChildByName(id) as Graphics
         renderLine(link, { from, to })
       })
