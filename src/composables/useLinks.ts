@@ -26,6 +26,11 @@ const useLinks = () => {
     viewport.addChild(canvasEl)
   }
 
+  const removeLink = (id: string) => {
+    links.value = links.value.filter((link) => link.id !== id)
+    viewport.removeChild(viewport.getChildByName(id))
+  }
+
   const getConnectedLinksForElement = (elId: string) => {
     return links.value.filter((link) => link.from === elId || link.to === elId)
   }
@@ -33,6 +38,7 @@ const useLinks = () => {
   return {
     links,
     addLink,
+    removeLink,
     getConnectedLinksForElement,
   }
 }

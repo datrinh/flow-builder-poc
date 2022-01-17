@@ -3,9 +3,11 @@ import { NodeModel } from '../types'
 import { v4 as uuid } from 'uuid'
 import CanvasNode from '../components/CanvasNode'
 import useCanvas from './useCanvas'
+import useLinks from './useLinks'
 
 const nodes = useStorage<NodeModel[]>('nodes', [])
 const { viewport } = useCanvas()
+const { getConnectedLinksForElement, removeLink } = useLinks()
 
 type AddNodeProps = Omit<NodeModel, 'id'> & { id?: string }
 
@@ -24,6 +26,15 @@ const useNodes = () => {
     viewport.addChild(canvasEl)
 
     return newNode
+  }
+
+  const removeNode = (id: string) => {
+    nodes.value = nodes.value.filter((node) => node.id !== id)
+    const links = getConnectedLinksForElement(id)
+    links.forEach((l) => {
+      removeLink(l.id)
+    })
+    viewport.removeChild(viewport.getChildByName(id))
   }
 
   const updateNodePosition = (id: string, { x, y }: Position): NodeModel => {
@@ -50,6 +61,7 @@ const useNodes = () => {
     getNodeById,
     getIndexById,
     addNode,
+    removeNode,
     updateNodePosition,
     updateNodeData,
   }
