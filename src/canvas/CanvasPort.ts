@@ -1,10 +1,13 @@
-import { Container, DisplayObject, Graphics, InteractionEvent } from 'pixi.js'
+import { Container, DisplayObject, InteractionEvent } from 'pixi.js'
 import { NodeModel, Position } from '../types'
 import useCanvas from '../composables/useCanvas'
 import { v4 as uuid } from 'uuid'
 import useNodes from '../composables/useNodes'
 import useLinks from '../composables/useLinks'
 import { size } from '../utils/animations'
+import withDragDrop from '../utils/withDragDrop'
+import { drawBezier } from '../utils/line'
+import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
 
 interface CreatePortArgs {
   x: number
@@ -52,14 +55,30 @@ const CanvasPort = (parent: Container) => {
   const parentBounds = parent.getBounds()
 
   const leftPort = createPort({ x: 0, y: parentBounds.height / 2, id: 'left' })
-  const rightPort = createPort({ x: parentBounds.width, y: parentBounds.height / 2, id: 'right' })
+  const rightPort = withDragDrop(createPort({ x: parentBounds.width, y: parentBounds.height / 2, id: 'right' }))
   // const topPort = createPort({ x: parentBounds.width / 2, y: 0, id: 'top' })
   // const bottomPort = createPort({ x: parentBounds.width / 2, y: parentBounds.height, id: 'bottom' })
 
-  rightPort.on('pointerup', (ev: InteractionEvent) => {
-    const { x } = viewport.toWorld(ev.data.global)
-    const { y } = parent
-    onPortClicked({ x, y }, parent)
+  const line = new Graphics()
+  rightPort.on('drag-move', (ev: InteractionEvent) => {
+    const { x: fromX, y: fromY } = viewport.toLocal(rightPort.getGlobalPosition())
+    const { x: toX, y: toY } = viewport.toLocal(ev.data.global)
+    drawBezier(line, {
+      fromX,
+      fromY,
+      toX,
+      toY,
+    })
+  })
+  rightPort.on('drag-start', (ev: InteractionEvent) => {
+    viewport.addChild(line)
+    viewport.once('pointerup', (ev) => {
+      let { x, y } = viewport.toLocal(ev.data.global)
+      y = y - rightPort.y
+      const newNode = addNode({ x, y, data: { title: 'From Port' } })
+      addLink(parent.name, newNode.id)
+      viewport.removeChild(line)
+    })
   })
 
   const render = () => {
