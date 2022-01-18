@@ -1,10 +1,10 @@
 import { Container, DisplayObject, Graphics, InteractionEvent } from 'pixi.js'
 import { NodeModel, Position } from '../types'
-import useCanvas from './useCanvas'
+import useCanvas from '../composables/useCanvas'
 import { v4 as uuid } from 'uuid'
-import useNodes from './useNodes'
-import useLinks from './useLinks'
-import { size } from '../animations'
+import useNodes from '../composables/useNodes'
+import useLinks from '../composables/useLinks'
+import { size } from '../utils/animations'
 
 interface CreatePortArgs {
   x: number

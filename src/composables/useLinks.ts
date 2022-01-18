@@ -1,7 +1,7 @@
 import { Position, useStorage } from '@vueuse/core'
 import { NodeModel } from '../types'
 import { v4 as uuid } from 'uuid'
-import CanvasLink from '../components/CanvasLink'
+import CanvasLink from '../canvas/CanvasLink'
 import useCanvas from './useCanvas'
 
 type LinkType = 'directed' | 'undirected'

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
-import CanvasNode from './CanvasNode'
+import CanvasNode from '../canvas/CanvasNode'
 import useNodes from '../composables/useNodes'
 import useLinks from '../composables/useLinks'
-import CanvasLink from './CanvasLink'
+import CanvasLink from '../canvas/CanvasLink'
 import useCanvas from '../composables/useCanvas'
 
 const { nodes, addNode, getNodeById } = useNodes()
