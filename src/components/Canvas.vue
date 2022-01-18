@@ -21,8 +21,8 @@ onMounted(() => {
 
 const listenToNodes = () => {
   viewport.children.forEach(child => {
-    child.removeListener('clicked-wrapper')
-    child.on('clicked-wrapper', (ev) => {
+    child.removeListener('clicked-shell')
+    child.on('clicked-shell', (ev) => {
       emit('element-clicked', ev)
     })
   })

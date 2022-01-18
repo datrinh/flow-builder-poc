@@ -1,6 +1,5 @@
 import { Container, InteractionEvent, IPointData, Renderer, Sprite, Text, Texture } from 'pixi.js'
 import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
-import { DropShadowFilter } from '@pixi/filter-drop-shadow'
 import useCanvas from '../composables/useCanvas'
 import useNodes from '../composables/useNodes'
 import { computed, watchEffect } from 'vue'
@@ -8,7 +7,8 @@ import CanvasPort from './CanvasPort'
 import { fadeIn } from '../utils/animations'
 import withDragDrop from '../utils/withDragDrop'
 import useLinks from '../composables/useLinks'
-import { renderLine } from './CanvasLink'
+import { drawLine } from './CanvasLink'
+import NodeShell from './NodeShell'
 
 interface CanvasNodeProps {
   x: number
@@ -19,30 +19,6 @@ interface CanvasNodeProps {
 const { viewport } = useCanvas()
 const { updateNodePosition, getNodeById } = useNodes()
 const { getConnectedLinksForElement } = useLinks()
-
-const createWrapper = (id: string) => {
-  const wrapper = new Graphics()
-  wrapper.beginFill(0xffffff)
-  wrapper.drawRoundedRect(0, 0, 150, 100, 16)
-  wrapper.endFill()
-  wrapper.filters = [new DropShadowFilter({ rotation: 90, blur: 1, color: 0xababab })]
-  wrapper.interactive = true
-  wrapper.buttonMode = true
-  wrapper.name = id
-
-  wrapper.on('pointerover', () => {
-    wrapper.lineStyle(2, 0xfff171)
-    wrapper.drawRoundedRect(0, 0, 150, 100, 16)
-  })
-
-  wrapper.on('pointerout', () => {
-    wrapper.clear()
-    wrapper.beginFill(0xffffff)
-    wrapper.drawRoundedRect(0, 0, 150, 100, 16)
-  })
-
-  return wrapper
-}
 
 const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   const nodeModel = getNodeById(id)
@@ -58,13 +34,13 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   container.alpha = 0
   fadeIn(container)
 
-  const wrapper = withDragDrop(createWrapper(id)) as Graphics
-  wrapper
+  const shell = withDragDrop(NodeShell(id)) as Graphics
+  shell
     .on('drag-end', () => {
       updateNodePosition(container.name, { x: container.x, y: container.y })
     })
     .on('clicked', (ev) => {
-      container.emit('clicked-wrapper', { id, event: ev })
+      container.emit('clicked-shell', { id, event: ev })
     })
     .on('drag-move', (ev, offset) => {
       const newPosition = ev.data.getLocalPosition(viewport)
@@ -74,18 +50,18 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
       // update connected links
       connectedLinks.value.forEach(({ from, to, id }) => {
         const link = viewport.getChildByName(id) as Graphics
-        renderLine(link, { from, to })
+        drawLine(link, { from, to })
       })
     })
 
-  container.addChild(wrapper)
+  container.addChild(shell)
 
   let label = nodeModel?.data.title || ''
   const text = new Text(label, {
     fontSize: 16,
     fill: '#000',
     wordWrap: true,
-    wordWrapWidth: wrapper.width * 0.8,
+    wordWrapWidth: shell.width * 0.8,
   })
   text.x = 10
   text.y = 15
@@ -93,7 +69,7 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
   container.addChild(text)
 
   const onHover = () => {
-    wrapper.lineStyle(2, 0xababab)
+    shell.lineStyle(2, 0xababab)
   }
 
   container.on('pointerover', onHover)
