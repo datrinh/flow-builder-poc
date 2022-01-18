@@ -1,5 +1,5 @@
 import { Viewport } from 'pixi-viewport'
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js' // TODO: replace with tree shakable import in prod
 import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from 'd3'
 import { NodeModel } from '../types'
 import { Link } from './useLinks'

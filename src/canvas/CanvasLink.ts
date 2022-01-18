@@ -13,8 +13,8 @@ interface CanvasLinkProps {
 const { viewport } = useCanvas()
 
 export const drawLine = (line: Graphics, { from, to }: { from: string; to: string }) => {
-  const fromPort = (viewport.getChildByName(from) as Container).getChildByName('right')
-  const toPort = (viewport.getChildByName(to) as Container).getChildByName('left')
+  const fromPort = (viewport.getChildByName(from) as Container).getChildByName('origin')
+  const toPort = (viewport.getChildByName(to) as Container).getChildByName('target')
   const toPortPos = viewport.toLocal(toPort.getGlobalPosition())
   const fromPortPos = viewport.toLocal(fromPort.getGlobalPosition())
 

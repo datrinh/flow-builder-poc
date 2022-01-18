@@ -1,14 +1,15 @@
-import { Container, InteractionEvent, IPointData, Renderer, Sprite, Text, Texture } from 'pixi.js'
+import { Container, Text } from 'pixi.js'
 import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
 import useCanvas from '../composables/useCanvas'
 import useNodes from '../composables/useNodes'
 import { computed, watchEffect } from 'vue'
-import CanvasPort from './CanvasPort'
 import { fadeIn } from '../utils/animations'
 import withDragDrop from '../utils/withDragDrop'
 import useLinks from '../composables/useLinks'
 import { drawLine } from './CanvasLink'
 import NodeShell from './NodeShell'
+import OriginPort from '../components/OriginPort'
+import TargetPort from '../components/TargetPort'
 
 interface CanvasNodeProps {
   x: number
@@ -74,9 +75,11 @@ const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
 
   container.on('pointerover', onHover)
 
-  const { leftPort, rightPort } = CanvasPort(container)
-  container.addChild(leftPort)
-  container.addChild(rightPort)
+  // const { leftPort, rightPort } = CanvasPort(container)
+  const originPort = OriginPort(container)
+  const targetPort = TargetPort(container)
+  container.addChild(originPort)
+  container.addChild(targetPort)
 
   watchEffect(() => {
     if (nodeModel) {
