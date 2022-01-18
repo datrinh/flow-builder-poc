@@ -1,8 +1,9 @@
 import { Position } from '@vueuse/core'
 import { Container, Graphics, InteractionEvent, Sprite } from 'pixi.js'
 import useCanvas from '../composables/useCanvas'
+import { distance } from './geometry'
 
-const THRESHOLD_RADIUS = 8 * 8
+const THRESHOLD_RADIUS = 8
 const { viewport } = useCanvas()
 
 const withDragDrop = (element: Sprite | Graphics | Container) => {
@@ -24,16 +25,12 @@ const withDragDrop = (element: Sprite | Graphics | Container) => {
     if (!isDown) return
     const pos = ev.data.global
 
-    const dx = firstPos.x - pos.x
-    const dy = firstPos.y - pos.y
-    const distance = dx * dx + dy * dy // skip square-root (see above)
-
-    if (distance >= THRESHOLD_RADIUS) {
+    const d = distance(firstPos, pos)
+    if (d >= THRESHOLD_RADIUS) {
       isMoving = true
     }
 
     if (isMoving) {
-      console.log('startEmitted', startEmitted)
       element.emit('drag-move', ev, dragOffset)
 
       if (!startEmitted) {

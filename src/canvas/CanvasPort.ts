@@ -1,5 +1,4 @@
-import { Container, DisplayObject, InteractionEvent } from 'pixi.js'
-import { NodeModel, Position } from '../types'
+import type { Container, InteractionEvent } from 'pixi.js'
 import useCanvas from '../composables/useCanvas'
 import { v4 as uuid } from 'uuid'
 import useNodes from '../composables/useNodes'
@@ -8,6 +7,7 @@ import { size } from '../utils/animations'
 import withDragDrop from '../utils/withDragDrop'
 import { drawBezier } from '../utils/line'
 import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
+import { isWithinBounds } from '../utils/geometry'
 
 interface CreatePortArgs {
   x: number
@@ -21,13 +21,6 @@ interface CreatePortArgs {
 const { viewport } = useCanvas()
 const { addNode } = useNodes()
 const { addLink } = useLinks()
-
-const onPortClicked = ({ x, y }: Position, from: Container) => {
-  const margin = 100
-
-  const newNode = addNode({ x: x + margin, y, data: { title: 'From Port' } })
-  addLink(from.name, newNode.id)
-}
 
 const createPort = ({ x, y, radius = 5, color = 0xfff171, width = 2, id = uuid() }: CreatePortArgs) => {
   const port = new Graphics()
@@ -70,13 +63,21 @@ const CanvasPort = (parent: Container) => {
       toY,
     })
   })
-  rightPort.on('drag-start', (ev: InteractionEvent) => {
+  rightPort.on('drag-start', () => {
     viewport.addChild(line)
     viewport.once('pointerup', (ev) => {
       let { x, y } = viewport.toLocal(ev.data.global)
-      y = y - rightPort.y
-      const newNode = addNode({ x, y, data: { title: 'From Port' } })
-      addLink(parent.name, newNode.id)
+      const existingNode = viewport.children
+        // TODO: kinda dirty to check via class type. consider inheritance to extend pixi objects
+        .filter((c) => c.constructor.name === 'Container2')
+        .find((child) => isWithinBounds(ev.data.global, child.getBounds()))
+      if (existingNode) {
+        addLink(parent.name, existingNode.name)
+      } else {
+        y = y - rightPort.y
+        const newNode = addNode({ x, y, data: { title: 'From Port' } })
+        addLink(parent.name, newNode.id)
+      }
       viewport.removeChild(line)
     })
   })

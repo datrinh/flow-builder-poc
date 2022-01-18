@@ -21,7 +21,7 @@ const viewport = new Viewport({
   worldHeight: 1000,
   interaction: app.renderer.plugins.interaction,
 })
-
+// app.ticker.maxFPS = 60
 app.stage.addChild(viewport)
 
 // activate plugins

@@ -18,6 +18,11 @@ const { viewport } = useCanvas()
 
 const useLinks = () => {
   const addLink = (from: Link['from'], to: Link['to'], type: LinkType = 'directed') => {
+    const linkExists = links.value.some((link) => {
+      link.from === from && link.to === to
+    })
+    if (linkExists) return
+
     const id = uuid()
     const newLink = { from, to, type, id }
     links.value = [...links.value, newLink]
