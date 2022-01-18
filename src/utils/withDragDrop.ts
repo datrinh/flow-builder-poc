@@ -48,6 +48,7 @@ const withDragDrop = (element: Sprite | Graphics | Container) => {
     if (!isMoving) {
       element.emit('clicked', ev)
     } else {
+      // Only works when actually dragging the element with cursor
       element.emit('drag-end', ev)
     }
   })

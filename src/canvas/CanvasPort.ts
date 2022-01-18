@@ -1,4 +1,4 @@
-import type { Container, InteractionEvent } from 'pixi.js'
+import type { Container, InteractionData, InteractionEvent } from 'pixi.js'
 import useCanvas from '../composables/useCanvas'
 import { v4 as uuid } from 'uuid'
 import useNodes from '../composables/useNodes'
@@ -52,8 +52,7 @@ const CanvasPort = (parent: Container) => {
   // const topPort = createPort({ x: parentBounds.width / 2, y: 0, id: 'top' })
   // const bottomPort = createPort({ x: parentBounds.width / 2, y: parentBounds.height, id: 'bottom' })
 
-  const line = new Graphics()
-  rightPort.on('drag-move', (ev: InteractionEvent) => {
+  const onDragMove = (ev: InteractionEvent) => {
     const { x: fromX, y: fromY } = viewport.toLocal(rightPort.getGlobalPosition())
     const { x: toX, y: toY } = viewport.toLocal(ev.data.global)
     drawBezier(line, {
@@ -62,24 +61,29 @@ const CanvasPort = (parent: Container) => {
       toX,
       toY,
     })
-  })
+  }
+
+  const onDragEnd = (ev: InteractionEvent) => {
+    let { x, y } = viewport.toLocal(ev.data.global)
+    const existingNode = viewport.children
+      // TODO: kinda dirty to check via class type. consider inheritance to extend pixi objects
+      .filter((c) => c.name !== parent.name && c.constructor.name === 'Container2')
+      .find((child) => isWithinBounds(ev.data.global, child.getBounds()))
+    if (existingNode) {
+      addLink(parent.name, existingNode.name)
+    } else {
+      y = y - rightPort.y
+      const newNode = addNode({ x, y, data: { title: 'From Port' } })
+      addLink(parent.name, newNode.id)
+    }
+    viewport.removeChild(line)
+  }
+
+  const line = new Graphics()
+  rightPort.on('drag-move', onDragMove)
   rightPort.on('drag-start', () => {
     viewport.addChild(line)
-    viewport.once('pointerup', (ev) => {
-      let { x, y } = viewport.toLocal(ev.data.global)
-      const existingNode = viewport.children
-        // TODO: kinda dirty to check via class type. consider inheritance to extend pixi objects
-        .filter((c) => c.constructor.name === 'Container2')
-        .find((child) => isWithinBounds(ev.data.global, child.getBounds()))
-      if (existingNode) {
-        addLink(parent.name, existingNode.name)
-      } else {
-        y = y - rightPort.y
-        const newNode = addNode({ x, y, data: { title: 'From Port' } })
-        addLink(parent.name, newNode.id)
-      }
-      viewport.removeChild(line)
-    })
+    viewport.once('pointerup', onDragEnd)
   })
 
   const render = () => {
