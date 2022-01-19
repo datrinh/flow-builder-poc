@@ -19,7 +19,7 @@ export interface CanvasEvent {
   event: InteractionEvent
 }
 
-export type CanvasElementType = 'node' | 'link'
+export type CanvasElementType = 'node' | 'link' | 'port'
 
 export interface AdditionalProps {
   type: CanvasElementType

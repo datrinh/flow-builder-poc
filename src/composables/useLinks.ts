@@ -1,5 +1,4 @@
-import { Position, useStorage } from '@vueuse/core'
-import { NodeModel } from '../types'
+import { useStorage } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import CanvasLink from '../canvas/CanvasLink'
 import useCanvas from './useCanvas'
@@ -14,7 +13,7 @@ export interface Link {
 }
 
 const links = useStorage<Link[]>('links', [])
-const { viewport } = useCanvas()
+const { addChild, removeChild, getChildByName } = useCanvas()
 
 const useLinks = () => {
   const addLink = (from: Link['from'], to: Link['to'], type: LinkType = 'directed') => {
@@ -28,12 +27,12 @@ const useLinks = () => {
     links.value = [...links.value, newLink]
 
     const canvasEl = new CanvasLink({ from, to, id })
-    viewport.addChild(canvasEl)
+    addChild(canvasEl)
   }
 
   const removeLink = (id: string) => {
     links.value = links.value.filter((link) => link.id !== id)
-    viewport.removeChild(viewport.getChildByName(id))
+    removeChild(getChildByName(id))
   }
 
   const getConnectedLinksForElement = (elId: string) => {

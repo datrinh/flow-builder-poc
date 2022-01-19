@@ -18,7 +18,7 @@ const TargetPort = (parent: Container) => {
   const parentBounds = parent.getBounds()
   const x = 0
   const y = parentBounds.height / 2
-  const port = withDragDrop(CanvasPort({ x, y, id: 'target' }))
+  const port = withDragDrop(new CanvasPort({ x, y, id: 'target' }))
   //   const shadowLine = new Graphics()
 
   //   const onDragMove = (ev: InteractionEvent) => {

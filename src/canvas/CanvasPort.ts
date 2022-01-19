@@ -1,5 +1,6 @@
 import { size } from '../utils/animations'
 import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
+import { AdditionalProps, CanvasElementType } from '../types'
 
 interface CreatePortArgs {
   x: number
@@ -7,29 +8,32 @@ interface CreatePortArgs {
   color?: number
   width?: number
   radius?: number
-  id?: 'origin' | 'target'
+  id: 'origin' | 'target'
 }
 
-const CanvasPort = ({ x, y, radius = 5, color = 0xfff171, width = 2, id }: CreatePortArgs) => {
-  const port = new Graphics()
-  port.lineStyle({ width, color })
-  port.beginFill(color, 1)
-  port.drawCircle(0, 0, radius)
-  port.endFill()
-  port.interactive = true
-  port.buttonMode = true
-  port.name = id || ''
-  port.x = x
-  port.y = y
+class CanvasPort extends Graphics implements AdditionalProps {
+  type: CanvasElementType = 'port'
 
-  port.on('pointerover', () => {
-    size(port, 20, 100)
-  })
-  port.on('pointerout', () => {
-    size(port, 10, 100)
-  })
+  constructor({ x, y, radius = 5, color = 0xfff171, width = 2, id }: CreatePortArgs) {
+    super()
 
-  return port
+    this.lineStyle({ width, color })
+    this.beginFill(color, 1)
+    this.drawCircle(0, 0, radius)
+    this.endFill()
+    this.interactive = true
+    this.buttonMode = true
+    this.name = id
+    this.x = x
+    this.y = y
+
+    this.on('pointerover', () => {
+      size(this, 20, 100)
+    })
+    this.on('pointerout', () => {
+      size(this, 10, 100)
+    })
+  }
 }
 
 export default CanvasPort
