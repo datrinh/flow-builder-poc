@@ -1,8 +1,9 @@
 import { Viewport } from 'pixi-viewport'
 import * as PIXI from 'pixi.js' // TODO: replace with tree shakable import in prod
-import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from 'd3'
 import { NodeModel } from '../types'
 import { Link } from './useLinks'
+import { DisplayObject } from 'pixi.js'
+import { forceLayout } from '../utils/layout'
 ;(window as any).__PIXI_INSPECTOR_GLOBAL_HOOK__ &&
   (window as any).__PIXI_INSPECTOR_GLOBAL_HOOK__.register({ PIXI: PIXI })
 
@@ -40,34 +41,23 @@ const useCanvas = () => {
     )
   }
 
-  const forceLayout = (nodes: NodeModel[], links: Link[]) => {
-    const simulation = forceSimulation(nodes)
-      .force(
-        'link',
-        forceLink(links.map((l) => ({ source: l.from, target: l.to })))
-          .id((d) => (d as Link).id)
-          .distance(50)
-      )
-      .force('charge', forceManyBody().strength(-2000))
-      .force('center', forceCenter(viewport.width / 2, viewport.height / 2))
-      .force('collision', forceCollide().radius(100).iterations(2))
-      .velocityDecay(0.8)
-
-    return simulation
-  }
-
-  const treeLayout = (nodes: NodeModel[], links: Link[]) => {
-    // TODO
-  }
-
   const autoLayout = (nodes: NodeModel[], links: Link[]) => {
     forceLayout(nodes, links)
     // treeLayout(nodes, links)
   }
 
+  const addChild = (child: DisplayObject) => viewport.addChild(child)
+
+  const removeChild = (child: DisplayObject) => viewport.removeChild(child)
+
+  const getChildByName = (name: string) => viewport.getChildByName(name)
+
   return {
     init,
     autoLayout,
+    addChild,
+    removeChild,
+    getChildByName,
     app,
     viewport,
   }

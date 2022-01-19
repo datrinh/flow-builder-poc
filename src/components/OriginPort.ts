@@ -7,6 +7,7 @@ import { drawBezier } from '../utils/line'
 import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
 import { isWithinBounds } from '../utils/geometry'
 import CanvasPort from '../canvas/CanvasPort'
+import { CharlesCanvasElementObj } from '../types'
 
 const { viewport } = useCanvas()
 const { addNode } = useNodes()
@@ -32,15 +33,16 @@ const OriginPort = (parent: Container) => {
 
   const onDragEnd = (ev: InteractionEvent) => {
     let { x, y } = viewport.toLocal(ev.data.global)
-    const existingNode = viewport.children
-      // TODO: kinda dirty to check via class type. consider inheritance to extend pixi objects
-      .filter((c) => c.name !== parent.name)
+    const existingNode = (viewport.children as CharlesCanvasElementObj[])
+      .filter((c) => c.name !== parent.name && c.type === 'node')
       .find((child) => isWithinBounds(ev.data.global, child.getBounds()))
+    console.log('existingNode', existingNode)
     if (existingNode) {
       addLink(parent.name, existingNode.name)
     } else {
       y = y - port.y
       const newNode = addNode({ x, y, data: { title: 'From Port' } })
+      console.log('newNode', newNode)
       addLink(parent.name, newNode.id)
     }
     viewport.removeChild(shadowLine)

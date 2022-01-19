@@ -34,7 +34,7 @@ watch(nodes, () => {
 
 const renderInitial = () => {
   nodes.value.forEach(({ x, y, id }) => {
-    const node = CanvasNode({ x, y, id })
+    const node = new CanvasNode({ x, y, id })
     // node.on('port-clicked', onPortClicked)
     viewport.addChild(node)
   })

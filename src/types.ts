@@ -1,4 +1,4 @@
-import { InteractionEvent } from 'pixi.js'
+import { DisplayObject, InteractionEvent } from 'pixi.js'
 
 export interface Position {
   x: number
@@ -18,3 +18,11 @@ export interface CanvasEvent {
   id: string
   event: InteractionEvent
 }
+
+export type CanvasElementType = 'node'
+
+export interface WithType {
+  type: CanvasElementType
+}
+
+export type CharlesCanvasElementObj = DisplayObject & WithType

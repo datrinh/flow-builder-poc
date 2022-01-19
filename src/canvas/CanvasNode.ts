@@ -10,6 +10,7 @@ import { drawLine } from './CanvasLink'
 import NodeShell from './NodeShell'
 import OriginPort from '../components/OriginPort'
 import TargetPort from '../components/TargetPort'
+import { CanvasElementType, WithType } from '../types'
 
 interface CanvasNodeProps {
   x: number
@@ -21,75 +22,93 @@ const { viewport } = useCanvas()
 const { updateNodePosition, getNodeById } = useNodes()
 const { getConnectedLinksForElement } = useLinks()
 
-const CanvasNode = ({ x, y, id }: CanvasNodeProps) => {
-  const nodeModel = getNodeById(id)
-  const connectedLinks = computed(() => getConnectedLinksForElement(id))
+class CanvasNode extends Container implements WithType {
+  public nodeModel
+  public shell = withDragDrop(NodeShell(this.name)) as Graphics
+  public text
+  public connectedLinks = computed(() => getConnectedLinksForElement(this.name))
+  public type: CanvasElementType = 'node'
 
-  const container = withDragDrop(new Container())
-  container.name = id
-  container.buttonMode = true
-  container.interactive = true
-  container.position.set(x, y)
-  container.pivot.x = container.width / 2
-  container.pivot.y = container.height / 2
-  container.alpha = 0
-  fadeIn(container)
-
-  const shell = withDragDrop(NodeShell(id)) as Graphics
-  shell
-    .on('drag-end', () => {
-      updateNodePosition(container.name, { x: container.x, y: container.y })
-    })
-    .on('clicked', (ev) => {
-      container.emit('clicked-shell', { id, event: ev })
-    })
-    .on('drag-move', (ev, offset) => {
-      const newPosition = ev.data.getLocalPosition(viewport)
-      container.x = newPosition.x - offset.x
-      container.y = newPosition.y - offset.y
-
-      // update connected links
-      connectedLinks.value.forEach(({ from, to, id }) => {
-        const link = viewport.getChildByName(id) as Graphics
-        drawLine(link, { from, to })
-      })
+  constructor({ x, y, id }: CanvasNodeProps) {
+    super()
+    this.x = x
+    this.y = y
+    this.name = id
+    this.buttonMode = true
+    this.interactive = true
+    this.position.set(x, y)
+    this.pivot.x = this.width / 2
+    this.pivot.y = this.height / 2
+    this.alpha = 0
+    this.nodeModel = getNodeById(this.name)
+    this.text = new Text(this.nodeModel?.data.title || '', {
+      fontSize: 16,
+      fill: '#000',
+      wordWrap: true,
+      wordWrapWidth: this.shell.width * 0.8,
     })
 
-  container.addChild(shell)
-
-  let label = nodeModel?.data.title || ''
-  const text = new Text(label, {
-    fontSize: 16,
-    fill: '#000',
-    wordWrap: true,
-    wordWrapWidth: shell.width * 0.8,
-  })
-  text.x = 10
-  text.y = 15
-  text.resolution = 2
-  container.addChild(text)
-
-  const onHover = () => {
-    shell.lineStyle(2, 0xababab)
+    this.initShell()
+    this.initText()
+    this.initPorts()
+    this.watchChanges()
+    fadeIn(this)
   }
 
-  container.on('pointerover', onHover)
+  private initShell() {
+    this.shell
+      .on('drag-end', () => {
+        updateNodePosition(this.name, { x: this.x, y: this.y })
+      })
+      .on('clicked', (ev) => {
+        this.emit('clicked-shell', { id: this.name, event: ev })
+      })
+      .on('drag-move', (ev, offset) => {
+        const newPosition = ev.data.getLocalPosition(viewport)
+        this.x = newPosition.x - offset.x
+        this.y = newPosition.y - offset.y
 
-  // const { leftPort, rightPort } = CanvasPort(container)
-  const originPort = OriginPort(container)
-  const targetPort = TargetPort(container)
-  container.addChild(originPort)
-  container.addChild(targetPort)
+        // update connected links
+        this.connectedLinks.value.forEach(({ from, to, id }) => {
+          const link = viewport.getChildByName(id) as Graphics
+          drawLine(link, { from, to })
+        })
+      })
 
-  watchEffect(() => {
-    if (nodeModel) {
-      container.x = nodeModel.x
-      container.y = nodeModel.y
-      text.text = nodeModel.data.title
-    }
-  })
+    this.addChild(this.shell)
+  }
 
-  return container
+  private initPorts() {
+    const originPort = OriginPort(this)
+    const targetPort = TargetPort(this)
+    console.log('originPort', originPort)
+    this.addChild(originPort)
+    this.addChild(targetPort)
+  }
+
+  private initText() {
+    let label = this.nodeModel?.data.title || ''
+    this.text = new Text(label, {
+      fontSize: 16,
+      fill: '#000',
+      wordWrap: true,
+      wordWrapWidth: this.shell.width * 0.8,
+    })
+    this.text.x = 10
+    this.text.y = 15
+    this.text.resolution = 2
+    this.addChild(this.text)
+  }
+
+  private watchChanges() {
+    watchEffect(() => {
+      if (this.nodeModel) {
+        this.x = this.nodeModel.x
+        this.y = this.nodeModel.y
+        this.text.text = this.nodeModel.data.title
+      }
+    })
+  }
 }
 
 export default CanvasNode

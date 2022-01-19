@@ -22,7 +22,8 @@ const useNodes = () => {
     nodes.value = [...nodes.value, newNode]
 
     // create corresponding canvas el
-    const canvasEl = CanvasNode({ x, y, id })
+    const canvasEl = new CanvasNode({ x, y, id })
+    console.log('canvasEl', canvasEl)
     viewport.addChild(canvasEl)
 
     return newNode
