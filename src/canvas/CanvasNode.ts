@@ -6,11 +6,12 @@ import { computed, watchEffect } from 'vue'
 import { fadeIn } from '../utils/animations'
 import withDragDrop from '../utils/withDragDrop'
 import useLinks from '../composables/useLinks'
-import { drawLine } from './CanvasLink'
+// import { drawLine } from './CanvasLink'
 import NodeShell from './NodeShell'
 import OriginPort from '../components/OriginPort'
 import TargetPort from '../components/TargetPort'
-import { CanvasElementType, WithType } from '../types'
+import { CanvasElementType, AdditionalProps } from '../types'
+import CanvasLink from './CanvasLink'
 
 interface CanvasNodeProps {
   x: number
@@ -22,7 +23,7 @@ const { viewport } = useCanvas()
 const { updateNodePosition, getNodeById } = useNodes()
 const { getConnectedLinksForElement } = useLinks()
 
-class CanvasNode extends Container implements WithType {
+class CanvasNode extends Container implements AdditionalProps {
   public nodeModel
   public shell = withDragDrop(NodeShell(this.name)) as Graphics
   public text
@@ -51,8 +52,11 @@ class CanvasNode extends Container implements WithType {
     this.initShell()
     this.initText()
     this.initPorts()
-    this.watchChanges()
     fadeIn(this)
+
+    watchEffect(() => {
+      this.update()
+    })
   }
 
   private initShell() {
@@ -70,8 +74,9 @@ class CanvasNode extends Container implements WithType {
 
         // update connected links
         this.connectedLinks.value.forEach(({ from, to, id }) => {
-          const link = viewport.getChildByName(id) as Graphics
-          drawLine(link, { from, to })
+          const link = viewport.getChildByName(id) as CanvasLink
+          link.update()
+          // drawLine(link, { from, to })
         })
       })
 
@@ -100,14 +105,12 @@ class CanvasNode extends Container implements WithType {
     this.addChild(this.text)
   }
 
-  private watchChanges() {
-    watchEffect(() => {
-      if (this.nodeModel) {
-        this.x = this.nodeModel.x
-        this.y = this.nodeModel.y
-        this.text.text = this.nodeModel.data.title
-      }
-    })
+  public update() {
+    if (this.nodeModel) {
+      this.x = this.nodeModel.x
+      this.y = this.nodeModel.y
+      this.text.text = this.nodeModel.data.title
+    }
   }
 }
 

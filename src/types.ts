@@ -19,10 +19,10 @@ export interface CanvasEvent {
   event: InteractionEvent
 }
 
-export type CanvasElementType = 'node'
+export type CanvasElementType = 'node' | 'link'
 
-export interface WithType {
+export interface AdditionalProps {
   type: CanvasElementType
 }
 
-export type CharlesCanvasElementObj = DisplayObject & WithType
+export type CharlesCanvasElementObj = DisplayObject & AdditionalProps

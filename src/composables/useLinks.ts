@@ -27,7 +27,7 @@ const useLinks = () => {
     const newLink = { from, to, type, id }
     links.value = [...links.value, newLink]
 
-    const canvasEl = CanvasLink({ from, to, id })
+    const canvasEl = new CanvasLink({ from, to, id })
     viewport.addChild(canvasEl)
   }
 

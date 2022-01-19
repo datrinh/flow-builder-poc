@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid'
 import useCanvas from '../composables/useCanvas'
 import { drawBezier } from '../utils/line'
 import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
+import { AdditionalProps, CanvasElementType } from '../types'
 
 interface CanvasLinkProps {
   from: string
@@ -12,22 +13,32 @@ interface CanvasLinkProps {
 
 const { viewport } = useCanvas()
 
-export const drawLine = (line: Graphics, { from, to }: { from: string; to: string }) => {
-  const fromPort = (viewport.getChildByName(from) as Container).getChildByName('origin')
-  const toPort = (viewport.getChildByName(to) as Container).getChildByName('target')
-  const toPortPos = viewport.toLocal(toPort.getGlobalPosition())
-  const fromPortPos = viewport.toLocal(fromPort.getGlobalPosition())
+class CanvasLink extends Graphics implements AdditionalProps {
+  type: CanvasElementType = 'link'
+  from: string
+  to: string
 
-  drawBezier(line, { fromX: fromPortPos.x, fromY: fromPortPos.y, toX: toPortPos.x, toY: toPortPos.y })
-}
+  constructor({ from, to, id = uuid() }: CanvasLinkProps) {
+    super()
+    this.name = id
+    this.from = from
+    this.to = to
 
-const CanvasLink = ({ from, to, id = uuid() }: CanvasLinkProps) => {
-  const line = new Graphics()
-  line.name = id
+    this.update()
+  }
 
-  drawLine(line, { from, to })
+  private drawLine(line: Graphics, { from, to }: { from: string; to: string }) {
+    const fromPort = (viewport.getChildByName(from) as Container).getChildByName('origin')
+    const toPort = (viewport.getChildByName(to) as Container).getChildByName('target')
+    const toPortPos = viewport.toLocal(toPort.getGlobalPosition())
+    const fromPortPos = viewport.toLocal(fromPort.getGlobalPosition())
 
-  return line
+    drawBezier(line, { fromX: fromPortPos.x, fromY: fromPortPos.y, toX: toPortPos.x, toY: toPortPos.y })
+  }
+
+  public update() {
+    this.drawLine(this, { from: this.from, to: this.to })
+  }
 }
 
 export default CanvasLink
