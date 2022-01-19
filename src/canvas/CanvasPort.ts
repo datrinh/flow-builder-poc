@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid'
 import { size } from '../utils/animations'
 import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
 
@@ -8,10 +7,10 @@ interface CreatePortArgs {
   color?: number
   width?: number
   radius?: number
-  id?: string
+  id?: 'origin' | 'target'
 }
 
-const CanvasPort = ({ x, y, radius = 5, color = 0xfff171, width = 2, id = uuid() }: CreatePortArgs) => {
+const CanvasPort = ({ x, y, radius = 5, color = 0xfff171, width = 2, id }: CreatePortArgs) => {
   const port = new Graphics()
   port.lineStyle({ width, color })
   port.beginFill(color, 1)
@@ -19,7 +18,7 @@ const CanvasPort = ({ x, y, radius = 5, color = 0xfff171, width = 2, id = uuid()
   port.endFill()
   port.interactive = true
   port.buttonMode = true
-  port.name = id
+  port.name = id || ''
   port.x = x
   port.y = y
 

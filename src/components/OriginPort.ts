@@ -34,7 +34,7 @@ const OriginPort = (parent: Container) => {
     let { x, y } = viewport.toLocal(ev.data.global)
     const existingNode = viewport.children
       // TODO: kinda dirty to check via class type. consider inheritance to extend pixi objects
-      .filter((c) => c.name !== parent.name && c.constructor.name === 'Container2')
+      .filter((c) => c.name !== parent.name)
       .find((child) => isWithinBounds(ev.data.global, child.getBounds()))
     if (existingNode) {
       addLink(parent.name, existingNode.name)
