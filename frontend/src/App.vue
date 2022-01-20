@@ -8,7 +8,7 @@ import NodeDetail from './components/NodeDetail.vue'
 import { ref } from 'vue'
 
 const { nodes, addNode, getNodeById, updateNodeData, removeNode } = useNodes()
-const { links } = useLinks()
+const { links, addLink } = useLinks()
 const { viewport, autoLayout } = useCanvas()
 
 const selectedNode = ref<NodeModel>()
@@ -18,6 +18,18 @@ const onElementClicked = (ev: CanvasEvent) => {
   console.log('selectedNode', selectedNode.value)
 }
 
+const createMocks = () => {
+  const amount = 100
+  for (let i = 0; i <= amount; i++) {
+    const x = Math.random() * 2000
+    const y = Math.random() * 2000
+    // const newNode = addNode({x, y, data: { title: `Node ${i}` }})
+    const newNode = addNode({x, y, data: { title: '' }})
+    if (nodes.value[i-1] && Math.random() > 0.5) {
+      addLink(nodes.value[i-1].id, newNode.id)
+    }
+  }
+};
 const reset = () => {
   nodes.value = []
   links.value = []
@@ -56,6 +68,7 @@ const onDeleteNode = () => {
     <div class="fixed top-4 right-4 h-[40vh] w-60 bg-white rounded-sm p-4 shadow-lg overflow-auto">
       <h1>Nodes ({{ nodes.length }})</h1>
       <button @click="reset" class="border p-1">Reset</button>
+      <button @click="createMocks" class="border p-1">Mocks</button>
       <!-- <button @click="onAutoLayout" class="border p-1">Auto Layout</button> -->
       <pre>
         {{ nodes }}

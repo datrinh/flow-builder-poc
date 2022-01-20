@@ -86,7 +86,6 @@ class CanvasNode extends Container implements AdditionalProps {
   private initPorts() {
     const originPort = OriginPort(this)
     const targetPort = TargetPort(this)
-    console.log('originPort', originPort)
     this.addChild(originPort)
     this.addChild(targetPort)
   }

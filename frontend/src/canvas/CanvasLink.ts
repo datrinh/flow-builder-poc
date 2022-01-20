@@ -1,7 +1,7 @@
 import { Container } from 'pixi.js'
 import { v4 as uuid } from 'uuid'
 import useCanvas from '../composables/useCanvas'
-import { drawBezier } from '../utils/line'
+import { drawBezier, drawLineRect } from '../utils/line'
 import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
 import { AdditionalProps, CanvasElementType } from '../types'
 
@@ -33,7 +33,8 @@ class CanvasLink extends Graphics implements AdditionalProps {
     const toPortPos = viewport.toLocal(toPort.getGlobalPosition())
     const fromPortPos = viewport.toLocal(fromPort.getGlobalPosition())
 
-    drawBezier(line, { fromX: fromPortPos.x, fromY: fromPortPos.y, toX: toPortPos.x, toY: toPortPos.y })
+    // drawBezier(line, { fromX: fromPortPos.x, fromY: fromPortPos.y, toX: toPortPos.x, toY: toPortPos.y })
+    drawLineRect(line, { fromX: fromPortPos.x, fromY: fromPortPos.y, toX: toPortPos.x, toY: toPortPos.y })
   }
 
   public update() {

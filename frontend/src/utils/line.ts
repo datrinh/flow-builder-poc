@@ -24,4 +24,6 @@ export const drawLineRect = (line: Graphics, { fromX, fromY, toX, toY }: DrawLin
   line.lineTo((toX - fromX) / 2, 0)
   line.lineTo((toX - fromX) / 2, toY - fromY)
   line.lineTo(toX - fromX, toY - fromY)
+  line.x = fromX
+  line.y = fromY
 }

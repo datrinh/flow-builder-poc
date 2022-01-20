@@ -36,13 +36,11 @@ const OriginPort = (parent: Container) => {
     const existingNode = (viewport.children as CharlesCanvasElementObj[])
       .filter((c) => c.name !== parent.name && c.type === 'node')
       .find((child) => isWithinBounds(ev.data.global, child.getBounds()))
-    console.log('existingNode', existingNode)
     if (existingNode) {
       addLink(parent.name, existingNode.name)
     } else {
       y = y - port.y
       const newNode = addNode({ x, y, data: { title: '' } })
-      console.log('newNode', newNode)
       addLink(parent.name, newNode.id)
     }
     viewport.removeChild(shadowLine)
