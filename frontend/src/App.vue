@@ -28,7 +28,7 @@ const onDragCard = (ev: DragEvent) => {
   ev.dataTransfer!.setData('text/plain', 'new-node')
 }
 const onCardDropped = ({ x, y }: Position) => {
-  addNode({ x, y, data: { title: 'Test Title' } })
+  addNode({ x, y, data: { title: '' } })
 }
 const onAutoLayout = () => {
   autoLayout(nodes.value, links.value)

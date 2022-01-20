@@ -41,7 +41,7 @@ const OriginPort = (parent: Container) => {
       addLink(parent.name, existingNode.name)
     } else {
       y = y - port.y
-      const newNode = addNode({ x, y, data: { title: 'From Port' } })
+      const newNode = addNode({ x, y, data: { title: '' } })
       console.log('newNode', newNode)
       addLink(parent.name, newNode.id)
     }
