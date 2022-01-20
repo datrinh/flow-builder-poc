@@ -12,6 +12,7 @@ import OriginPort from '../components/OriginPort'
 import TargetPort from '../components/TargetPort'
 import { CanvasElementType, AdditionalProps } from '../types'
 import CanvasLink from './CanvasLink'
+import { Z_INDEX } from '../constants'
 
 interface CanvasNodeProps {
   x: number
@@ -48,6 +49,7 @@ class CanvasNode extends Container implements AdditionalProps {
       wordWrap: true,
       wordWrapWidth: this.shell.width * 0.8,
     })
+    this.zIndex = Z_INDEX.NODE
 
     this.initShell()
     this.initText()

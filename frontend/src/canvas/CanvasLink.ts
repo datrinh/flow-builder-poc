@@ -4,6 +4,7 @@ import useCanvas from '../composables/useCanvas'
 import { drawBezier, drawLineRect } from '../utils/line'
 import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth'
 import { AdditionalProps, CanvasElementType } from '../types'
+import { Z_INDEX } from '../constants'
 
 interface CanvasLinkProps {
   from: string
@@ -23,6 +24,7 @@ class CanvasLink extends Graphics implements AdditionalProps {
     this.name = id
     this.from = from
     this.to = to
+    this.zIndex = Z_INDEX.LINE
 
     this.update()
   }
@@ -33,8 +35,8 @@ class CanvasLink extends Graphics implements AdditionalProps {
     const toPortPos = viewport.toLocal(toPort.getGlobalPosition())
     const fromPortPos = viewport.toLocal(fromPort.getGlobalPosition())
 
-    // drawBezier(line, { fromX: fromPortPos.x, fromY: fromPortPos.y, toX: toPortPos.x, toY: toPortPos.y })
-    drawLineRect(line, { fromX: fromPortPos.x, fromY: fromPortPos.y, toX: toPortPos.x, toY: toPortPos.y })
+    drawBezier(line, { fromX: fromPortPos.x, fromY: fromPortPos.y, toX: toPortPos.x, toY: toPortPos.y })
+    // drawLineRect(line, { fromX: fromPortPos.x, fromY: fromPortPos.y, toX: toPortPos.x, toY: toPortPos.y })
   }
 
   public update() {
